@@ -1,14 +1,14 @@
-<footer>
-    <p id="quote-display">当年花期繁茂之时，如血樱落，美丽如斯。生应如樱花般灿烂，死亡也应如樱花凄美，如樱短暂易逝，也如樱绚丽绝伦，而不负吾身祈愿，此间性命，亦不足惜</p>
-    <p id="site-runtime">本站已安稳运行: 正在计算中...</p>
+<footer style="text-align:center; padding: 15px; background-color: #ffe6f2; color: #444; font-family: 'Microsoft YaHei', sans-serif;">
+    <p id="quote-display" style="white-space: pre-line; line-height: 1.6;">句子</p>
+    <p id="runtime-display" style="margin-top: 10px; font-size: 14px; color: #666;">本站已安稳运行：正在计算中</p>
 </footer>
 
 <script>
-    // 句子库
+    // === 句子库 ===
     const quotes = [
         "当年花期繁茂之时，如血樱落，美丽如斯。\n生应如樱花般灿烂，死亡也应如樱花凄美，如樱短暂易逝，也如樱绚丽绝伦，而不负吾身祈愿，此间性命，亦不足惜",
         "岁月如歌，时光如诗",
-        "山樱遍野白云卷，\n雾底霞间闻芳芬。\n多情最是依稀见，\n任是一瞥也动人\n"
+        "山樱遍野白云卷，\n雾底霞间闻芳芬。\n多情最是依稀见，\n任是一瞥也动人",
         "“是啊，终于想起了，抱歉，来晚了。”\n“谢谢，骗子，再见了，还有，对不起。”",
         "樱花会散落的原因。一是季节的更迭\n另一个是...当那棵树枯萎的时候…",
         "这个世界就是个宝石箱，\n璀璨夺目，犹如熠熠生辉的宝石箱",
@@ -23,59 +23,38 @@
         "倏倏地，倏倏地，樱漫落......\n于春花怒放中，你那朦胧的身影，独自远去，渐渐悄然褪去......\n愿从今往后的你的人生，永远都有幸福的“魔法”相伴。\n你能够出生在这世界上，与我相遇，真的是，太好了。",
         "我会穿越那七大海洋，去和你相见。\n将我的爱意，带到你的身边",
         "就在刚才，我看到了自己死亡的梦，\n但那也是我人生中最幸福的瞬间。\n想必我的坟墓一定会被鲜花簇拥着吧，\n但那只是些摆设而已。\n我真正的坟墓就存在在这些画作的旁边，它们便是我完美乱序的墓志铭\n----网易云音乐",
-        "人们的因果交流灯\n数不清的人们的因果使之发光\n我们的家也是那样的灯之一\n所以我们要回到哪里了\n我并不是站住了\n并不是没有走\n在这里，我在这个地方，我走过了我的人生。\nその時、かすかに櫻の詩が聞こえた。\n",
+        "人们的因果交流灯\n数不清的人们的因果使之发光\n我们的家也是那样的灯之一\n所以我们要回到哪里了\n我并不是站住了\n并不是没有走\n在这里，我在这个地方，我走过了我的人生。\nその時、かすかに櫻の詩が聞こえた。",
         "如果我走进海里...你会拉住我吗",
         "——夜晚的向日葵，存在的理由又是什么呢？\n——命中注定要朝向阳光生长，那夜晚的向日葵们，岂不是很辛苦？\n——哈哈，总能忍过去。没有太阳，有一点点星光，一点点希望，活着，就足够了吧。\n——如初春雪，暮春樱，夏晚荷，秋寒叶，天降物哀，执拗、纯粹而绝美。\n——这曲，是为一切不合时宜者而作。",
         "它若是虚无的话\n虚无本身即是如此",
-        "美好的时光总是不连续存在的。"
-        "有花堪折直须折，\n莫待无花空折枝",
+        "美好的时光总是不连续存在的。\n有花堪折直须折，\n莫待无花空折枝",
         "我宁愿因为你的存在而失去光明，\n也不愿因光明而失去你。",
-        "晨意微寒秋渐深，侧伴无事俏佳人。\n梦里不觉秋已深，余情岂是为他人",
+        "晨意微寒秋渐深，侧伴无事俏佳人。\n梦里不觉秋已深，余情岂是为他人"
     ];
 
-    // 更新句子显示
-    function updateQuote() {
-        const quoteElement = document.getElementById('quote-display');
+    const quoteDisplay = document.getElementById("quote-display");
+    const runtimeDisplay = document.getElementById("runtime-display");
+
+    // 随机显示一句句子
+    function getRandomQuote() {
         const randomIndex = Math.floor(Math.random() * quotes.length);
-        // 用 \n 分隔的字符串转换为 <br> 标签
-        const quoteWithBreaks = quotes[randomIndex].replace(/\n/g, '<br>');
-        quoteElement.innerHTML = quoteWithBreaks;
+        quoteDisplay.textContent = quotes[randomIndex];
     }
 
-    // 定义一个函数来计算和更新运行时间
+    // 显示网站运行时间
+    const startTime = Date.now();
     function updateRuntime() {
-        // !!! 日期
-        // 格式：'YYYY/MM/DD HH:MM:SS'
-        const websiteStartDate = '2025/10/09 19:00:00';
-
-        // 获取当前时间
-        const now = new Date();
-        // 获取起始时间
-        const start = new Date(websiteStartDate);
-
-        // 计算两个时间之间的总秒数
-        const diffInSeconds = Math.floor((now - start) / 1000);
-
-        // 将总秒数转换为天、小时、分钟和秒
-        const days = Math.floor(diffInSeconds / 86400); // 1天 = 24*60*60 = 86400秒
-        const hours = Math.floor((diffInSeconds % 86400) / 3600); // 1小时 = 3600秒
-        const minutes = Math.floor((diffInSeconds % 3600) / 60);
-        const seconds = diffInSeconds % 60;
-
-        // 格式化输出字符串
-        const runtimeString = `本站已安稳运行: ${days} 天 ${hours} 小时 ${minutes} 分钟 ${seconds} 秒`;
-
-        // 将计算好的字符串更新到 id 为 'site-runtime' 的元素中
-        document.getElementById('site-runtime').textContent = runtimeString;
+        const elapsedMs = Date.now() - startTime;
+        const seconds = Math.floor(elapsedMs / 1000) % 60;
+        const minutes = Math.floor(elapsedMs / 60000) % 60;
+        const hours = Math.floor(elapsedMs / 3600000) % 24;
+        const days = Math.floor(elapsedMs / 86400000);
+        runtimeDisplay.textContent = `网站运行时间: ${days}天 ${hours}小时 ${minutes}分 ${seconds}秒`;
     }
 
-    // 首次加载页面时立即运行一次
+    // 初始化并定时更新
+    getRandomQuote();
     updateRuntime();
-    updateQuote();
-
-    // 然后设置一个定时器，每秒钟（1000毫秒）都调用一次 updateRuntime 函数
+    setInterval(getRandomQuote, 30000);
     setInterval(updateRuntime, 1000);
-    
-    // 设置一个定时器，每分钟（60000毫秒）更换一次句子
-    setInterval(updateQuote, 30000);
 </script>
