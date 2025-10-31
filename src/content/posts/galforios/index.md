@@ -10,12 +10,14 @@ licenseName: "Unlicensed"
 ---
 
 # 所用模拟器在appstore中大多需付费，可以付费下载、自签或巨魔、共享账号（淘宝等网站购买）
-## 本教程的所有ipa文件[下载链接](https://www.123684.com/s/FrLAjv-mP2X)
+## 本教程的所有ipa文件[总下载链接](https://www.123684.com/s/FrLAjv-mP2X)
+- 各模拟器下含单独github直链
 
 ---
 
 # krkr引擎
 ### 工具1：xp3player
+### [单独下载](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/galgame/XP3Player1.3.12.ipa)
 ### 使用方法：
 1. 解压你下载的资源
 2. 确认你下载的资源内容，如果您在那里看到以 xp3 为扩展名的文件，例如 data.xp3，则通常是 Kirikiri
@@ -41,6 +43,7 @@ licenseName: "Unlicensed"
 
 # ONScripter引擎
 ### 工具：onsplayer
+
 ### 该模拟器类似于安卓中的ONScripter、MiNE等
 ### 注意：
 1. 该模拟器已在appstore下架，需自签或巨魔安装
