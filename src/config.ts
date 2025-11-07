@@ -21,7 +21,7 @@ const SITE_LANG = "zh_CN"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
 
 export const siteConfig: SiteConfig = {
 	title: "花间月",
-	subtitle: "于月下漫步人生路",
+	subtitle: "于月下漫步人生路，在花间停驻",
 
 	lang: SITE_LANG,
 
@@ -44,7 +44,7 @@ export const siteConfig: SiteConfig = {
 	// 顶栏标题配置
 	navbarTitle: {
 		// 顶栏标题文本
-		text: "MizukiUI",
+		text: "超炳",
 		// 顶栏标题图标路径，默认使用 public/assets/home/home.png
 		icon: "assets/home/home.png",
 	},
