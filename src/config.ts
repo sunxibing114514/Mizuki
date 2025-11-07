@@ -21,7 +21,7 @@ const SITE_LANG = "zh_CN"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
 
 export const siteConfig: SiteConfig = {
 	title: "花间月",
-	subtitle: "我的月，我的诗",
+	subtitle: "于月下漫步人生路",
 
 	lang: SITE_LANG,
 
