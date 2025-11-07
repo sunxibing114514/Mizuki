@@ -6,6 +6,7 @@
 </footer>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     // === 句子库 ===
     const quotes = [
         "当年花期繁茂之时，如血樱落，美丽如斯。\n生应如樱花般灿烂，死亡也应如樱花凄美，如樱短暂易逝，也如樱绚丽绝伦，而不负吾身祈愿，此间性命，亦不足惜",
@@ -80,4 +81,5 @@
     updateRuntime();
     setInterval(getRandomQuote, 30000);
     setInterval(updateRuntime, 1000);
+});
 </script>
