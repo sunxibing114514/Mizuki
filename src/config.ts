@@ -123,11 +123,11 @@ export const siteConfig: SiteConfig = {
 
 		homeText: {
 			enable: true, // 在主页显示自定义文本
-			title: "散满人间!", // 主页横幅主标题
+			title: "散满人间", // 主页横幅主标题
 
 			subtitle: [
 				"谁也没能被时间记住",
-				"欢迎光临",
+				"唯有留痕",
 			],
 			typewriter: {
 				enable: true, // 启用副标题打字机效果
