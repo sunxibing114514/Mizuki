@@ -21,7 +21,7 @@ const SITE_LANG = "zh_CN"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
 
 export const siteConfig: SiteConfig = {
 	title: "花间月",
-	subtitle: "于月下漫步人生路，在花间停驻",
+	subtitle: "于月下漫步，在花间停驻",
 
 	lang: SITE_LANG,
 
@@ -123,7 +123,7 @@ export const siteConfig: SiteConfig = {
 
 		homeText: {
 			enable: true, // 在主页显示自定义文本
-			title: "散满人间", // 主页横幅主标题
+			title: "花间月", // 主页横幅主标题
 
 			subtitle: [
 				"谁也没能被时间记住",
