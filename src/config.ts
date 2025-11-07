@@ -128,6 +128,7 @@ export const siteConfig: SiteConfig = {
 			subtitle: [
 				"谁也没能被时间记住",
 				"唯有留痕",
+    "于月下漫步，在花间停驻",
 			],
 			typewriter: {
 				enable: true, // 启用副标题打字机效果
