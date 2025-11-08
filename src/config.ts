@@ -44,7 +44,7 @@ export const siteConfig: SiteConfig = {
 	// 顶栏标题配置
 	navbarTitle: {
 		// 顶栏标题文本
-		text: "超炳",
+		text: "花间月",
 		// 顶栏标题图标路径，默认使用 public/assets/home/home.png
 		icon: "assets/home/home.png",
 	},
@@ -127,7 +127,6 @@ export const siteConfig: SiteConfig = {
 
 			subtitle: [
 				"谁也没能被时间记住",
-				"唯有留痕",
     "于月下漫步，在花间停驻",
 			],
 			typewriter: {
