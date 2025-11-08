@@ -27,16 +27,17 @@ licenseName: "Unlicensed"
 
 ---
 # 第0步 判断引擎
-｜包含文件｜对应引擎｜对应模拟器｜
-｜.xp3｜kirikiri｜xp3player｜
-｜.nsa｜onscripter｜onsplayer｜
-｜0.txt｜onscripter｜onsplayer｜
-｜nscripter.dat｜onscripter｜onsplayer｜
-｜roof.pts｜Artemis｜artroid+｜
-｜renpy文件夹｜ren'py｜spark等｜
-｜www文件夹｜RPGMV｜rpgviewer｜
-｜index.html｜RPGMZ/H5｜rpgviewer｜
-｜.swf｜flash｜rpgviewer｜
+| 包含文件      | 对应引擎      | 对应模拟器       |
+|---------------|---------------|------------------|
+| .xp3          | Kirikiri      | XP3Player        |
+| .nsa          | ONScripter    | ONSPlayer        |
+| 0.txt         | ONScripter    | ONSPlayer        |
+| nscript.dat   | ONScripter    | ONSPlayer        |
+| roof.pts      | Artemis       | Artroid+         |
+| renpy文件夹   | Ren'Py        | Spark等          |
+| www文件夹     | RPG Maker MV  | RPGViewer        |
+| index.html    | RPG Maker MZ/H5  | RPGViewer        |
+| .swf          | Flash         | RPGViewer     |
 ---
 
 # krkr 引擎
