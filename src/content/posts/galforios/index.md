@@ -12,10 +12,31 @@ licenseName: "Unlicensed"
 # 所用模拟器在 App Store 中大多需付费
 可以付费下载、自签或巨魔、共享账号（淘宝等网站购买）
 
+
+
 ## 本教程的所有 IPA 文件
 [总下载链接](https://www.123684.com/s/FrLAjv-mP2X)
 - 各模拟器下含单独 GitHub 直链
 
+
+
+
+
+
+
+
+---
+# 第0步 判断引擎
+｜包含文件｜对应引擎｜对应模拟器｜
+｜.xp3｜kirikiri｜xp3player｜
+｜.nsa｜onscripter｜onsplayer｜
+｜0.txt｜onscripter｜onsplayer｜
+｜nscripter.dat｜onscripter｜onsplayer｜
+｜roof.pts｜Artemis｜artroid+｜
+｜renpy文件夹｜ren'py｜spark等｜
+｜www文件夹｜RPGMV｜rpgviewer｜
+｜index.html｜RPGMZ/H5｜rpgviewer｜
+｜.swf｜flash｜rpgviewer｜
 ---
 
 # krkr 引擎
