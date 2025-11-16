@@ -58,3 +58,5 @@ v1.0 (2025-11-16)
 [直链](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/witches-at-summers-end1.0.0/witches-at-summers-end-1.1-all.zip)
 
 [123](https://www.123684.com/s/FrLAjv-tL2X)
+
+[baidu](https://pan.baidu.com/s/1RW8X16vdWXDHsWwVYan_mg) 提取码:c3vh
