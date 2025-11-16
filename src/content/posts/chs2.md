@@ -13,7 +13,7 @@ draft: false
 
 这是一个为 **[夏日尽头的女巫 (Witches at Summer's End)**] 制作的非官方中文汉化补丁。
 
-本汉化由 **超炳** 独立完成，旨在帮助更多中文玩家无障碍地体验这款优秀的游戏。
+本汉化由 **超炳** 独立完成
 
 **汉化状态：** ✅ 完成
 
@@ -73,5 +73,15 @@ draft: false
 - **[百度网盘](https://pan.baidu.com/s/1RW8X16vdWXDHsWwVYan_mg)** 提取码：`c3vh`
 
 ---
+
+原版游戏
+
+[vndb](https://vndb.org/v21057)
+
+[itch](https://cloverfirefly.itch.io/witches-at-summers-end)
+
+作者 cloverfirefly
+
+时间 20170312
 
 > **请享受游戏！** 🎮
