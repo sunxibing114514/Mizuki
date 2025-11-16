@@ -232,7 +232,7 @@ export const navBarConfig: NavBarConfig = {
 				},
 				{
 					name: "Telegram",
-					url: "https://t.me/+KOHqsbDAnbhiZjFl",
+					url: "https://t.me/chaobingblog",
 					external: true,
 					icon: "fa6-brands:telegram",
 				},
