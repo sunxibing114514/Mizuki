@@ -55,6 +55,6 @@ v1.0 (2025-11-16)
 请享受游戏！
 
 下载链接
-https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/witches-at-summers-end1.0.0/witches-at-summers-end-1.1-all.zip
+[直链](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/witches-at-summers-end1.0.0/witches-at-summers-end-1.1-all.zip)
 
-https://www.123684.com/s/FrLAjv-tL2X
+[123](https://www.123684.com/s/FrLAjv-tL2X)
