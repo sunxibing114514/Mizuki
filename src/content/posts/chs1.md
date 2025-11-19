@@ -3,7 +3,7 @@ title: シュルレアリスムの世界汉化补丁
 published: 2025-10-08
 description: シュルレアリスムの世界的汉化补丁
 tags: [Krkr,Pc,Mobile,汉化]
-category: 汉化补丁
+category: 汉化
 author: 超炳
 draft: false
 ---
