@@ -42,9 +42,10 @@ draft: false
 
 ## 🚀 使用说明
 
-1. 下载汉化补丁
+1. 下载汉化版游戏
 2. 解压文件
 3. 双击运行 `exe` 文件
+4. 点击设置，在右下角切换语言
 
 ---
 
@@ -78,12 +79,12 @@ draft: false
 
 原版游戏
 
-[vndb](https://vndb.org/v21057)
+**[vndb](https://vndb.org/v21057)**
 
-[itch](https://cloverfirefly.itch.io/witches-at-summers-end)
+**[itch](https://cloverfirefly.itch.io/witches-at-summers-end)**
 
-作者 cloverfirefly
+作者 **cloverfirefly**
 
-时间 20170312
+时间 **20170312**
 
 > **请享受游戏！** 🎮
