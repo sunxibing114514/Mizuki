@@ -87,4 +87,6 @@ draft: false
 
 时间 **20170312**
 
+[汉化版vndb](https://vndb.org/r144945)
+
 > **请享受游戏！** 🎮
