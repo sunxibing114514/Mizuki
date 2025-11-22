@@ -11,7 +11,7 @@ draft: false
 
 # 📖 关于本项目
 
-这是一个为 **[夏日尽头的女巫 (Witches at Summer's End)**] 制作的非官方中文汉化补丁。
+这是一个为 **[夏日尽头的女巫 (Witches at Summer's End)**] 制作的非官方中文汉化版。
 
 本汉化由 **超炳** 独立完成
 
