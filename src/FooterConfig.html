@@ -1,1 +1,79 @@
-这里是HTML注入示例，你可以在这个文件中添加自定义的HTML内容
+<footer>
+    <p id="quote-display">What is mind？<br>No matter.<br>What is matter？<br>Never mind</p>
+    <p id="runtime-display">网站运行时间计算中...</p>
+    <p id="date-display">网站创建时间: 2025年10月17日</p>
+    <p id="copyright-display">
+        ©2025 By <strong><a href="https://space.bilibili.com/2044562667" target="_blank">花间月</a></strong>
+    </p>
+    <a href="https://icp.gov.moe/?keyword=20259026" target="_blank">萌ICP备20259026号</a>
+
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // === 句子库 ===
+    const quotes = [
+        "当年花期繁茂之时，如血樱落，美丽如斯。\n生应如樱花般灿烂，死亡也应如樱花凄美，如樱短暂易逝，也如樱绚丽绝伦，而不负吾身祈愿，此间性命，亦不足惜",
+        "岁月如歌，时光如诗",
+        "山樱遍野白云卷，\n雾底霞间闻芳芬。\n多情最是依稀见，\n任是一瞥也动人",
+        "“是啊，终于想起了，抱歉，来晚了。”\n“谢谢，骗子，再见了，还有，对不起。”",
+        "樱花会散落的原因。一是季节的更迭\n另一个是...当那棵树枯萎的时候…",
+        "这个世界就是个宝石箱，\n璀璨夺目，犹如熠熠生辉的宝石箱",
+        "她选择了他成为主人。\n他也发誓尽全力去帮助她。\n皎洁的月光照亮了黑暗。\n仓库里出现的骑士的身影，像是为了取回寂静一般。\n现在独自一个人回想，那熟悉的名字脱口而出。\n——如今仍忘不了的那苍蓝光芒之下。\n沐浴在月光之中的金发，像是洒了砂金一般的细致",
+        "你就把你能治的人给治好吧\n我的伤..已经不是你能治疗的了",
+        "仰望天空，注视天空，享受天空。\n答案，就在那里",
+        "立春天，风渐暖，\n伊人一去不复返",
+        "平凡的天才展示才能，\n真正的天才让人忘却才能",
+        "缓缓飘落的樱花像思念\n为何挽回要赶在冬天来之前",
+        "What is mind？\nNo matter.\nWhat is matter？\nNever mind",
+        "宇宙虽有起源，却没有终结--无限。\n星辰虽也有起源，却因其自身的力量而逐渐消亡--有限。\n拥有智慧之人往往是最为愚蠢的，纵观历史便可得知这一点。\n在海中生活的鱼，不知道地上的世界。\n若它们拥有智慧，也会因此而灭亡。\n人类想要超越光速，比鱼想要在陆地上生活更要滑稽。\n这也可以说是神给那些抵抗者们的最后通碟",
+        "倏倏地，倏倏地，樱漫落......\n于春花怒放中，你那朦胧的身影，独自远去，渐渐悄然褪去......\n愿从今往后的你的人生，永远都有幸福的\"魔法\"相伴。\n你能够出生在这世界上，与我相遇，真的是，太好了。",
+        "我会穿越那七大海洋，去和你相见。\n将我的爱意，带到你的身边",
+        "就在刚才，我看到了自己死亡的梦，\n但那也是我人生中最幸福的瞬间。\n想必我的坟墓一定会被鲜花簇拥着吧，\n但那只是些摆设而已。\n我真正的坟墓就存在在这些画作的旁边，它们便是我完美乱序的墓志铭\n----网易云音乐",
+        "人们的因果交流灯\n数不清的人们的因果使之发光\n我们的家也是那样的灯之一\n所以我们要回到哪里了\n我并不是站住了\n并不是没有走\n在这里，我在这个地方，我走过了我的人生。\nその時、かすかに櫻の詩が聞こえた。",
+        "如果我走进海里...你会拉住我吗",
+        "——夜晚的向日葵，存在的理由又是什么呢？\n——命中注定要朝向阳光生长，那夜晚的向日葵们，岂不是很辛苦？\n——哈哈，总能忍过去。没有太阳，有一点点星光，一点点希望，活着，就足够了吧。\n——如初春雪，暮春樱，夏晚荷，秋寒叶，天降物哀，执拗、纯粹而绝美。\n——这曲，是为一切不合时宜者而作。",
+        "它若是虚无的话\n虚无本身即是如此",
+        "美好的时光总是不连续存在的。",
+        "有花堪折直须折，\n莫待无花空折枝。",
+        "我宁愿因为你的存在而失去光明，\n也不愿因光明而失去你。",
+        "晨意微寒秋渐深，侧伴无事俏佳人。\n梦里不觉秋已深，余情岂是为他人"
+    ];
+
+    const quoteDisplay = document.getElementById("quote-display");
+    const runtimeDisplay = document.getElementById("runtime-display");
+    const dateDisplay = document.getElementById("date-display");
+
+    // 网站创建时间（固定）
+    const siteCreationTime = new Date('2025-10-17T00:00:00');
+
+    // 显示网站运行时间
+    function updateRuntime() {
+        const now = new Date();
+        const elapsedMs = now - siteCreationTime;
+        if (elapsedMs < 0) {
+            runtimeDisplay.textContent = "网站运行时间: 0天 0小时 0分 0秒";
+            return;
+        }
+
+        const seconds = Math.floor(elapsedMs / 1000) % 60;
+        const minutes = Math.floor(elapsedMs / 60000) % 60;
+        const hours = Math.floor(elapsedMs / 3600000) % 24;
+        const days = Math.floor(elapsedMs / 86400000);
+        runtimeDisplay.textContent = `网站运行时间: ${days}天 ${hours}小时 ${minutes}分 ${seconds}秒`;
+    }
+
+    // 随机显示句子（带换行）
+    function getRandomQuote() {
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        const quoteWithBreaks = quotes[randomIndex].replace(/\n/g, "<br>");
+        quoteDisplay.innerHTML = quoteWithBreaks;
+    }
+
+    // 初始化
+    getRandomQuote();
+    updateRuntime();
+    setInterval(getRandomQuote, 30000);
+    setInterval(updateRuntime, 1000);
+});
+</script>
