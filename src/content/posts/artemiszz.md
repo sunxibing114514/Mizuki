@@ -16,7 +16,7 @@ draft: false
 1. 解压ipa，你会看见一个叫payload的文件夹，内含一个.app文件夹
 
 2. 将游戏必要文件(其实无脑将所有文件放进去也可以)放进.app文件夹内
-  - 通常，必要文件为.dll何.pfs(001.002也算)，选择性含movie，pc，system文件夹
+  - 通常，必要文件为.dll和.pfs(001.002也算)，选择性含movie，pc，system文件夹
 
 3. 使用签名工具打包.app为ipa
   - 通常点击.app文件夹就可打包
