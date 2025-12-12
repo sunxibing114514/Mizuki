@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADOFAI自定义文件处理工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #00cec9;
+            --accent: #ff7675;
+            --dark: #1e1e2e;
+            --darker: #0d0d1a;
+            --light: #f8f9fa;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #f0f0f0;
+            --text-secondary: #b0b0b0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(108, 92, 231, 0.1) 0%, transparent 70%);
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .upload-area {
+            border: 3px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .upload-area:hover, .upload-area.drag-over {
+            border-color: var(--accent);
+            background: rgba(255, 118, 117, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            transition: transform 0.3s ease;
+        }
+        
+        .upload-area:hover .upload-icon {
+            transform: scale(1.1);
+        }
+        
+        .upload-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn:hover::after {
+            opacity: 1;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn:disabled::after {
+            display: none;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .features-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .features-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .features-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .features-title {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .features-title i {
+            margin-right: 8px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .feature-item {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--accent);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature-item.removed {
+            opacity: 0.7;
+            border-left-color: var(--danger);
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .preview {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            max-height: 200px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+        
+        .value-replacement {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            justify-content: center;
+        }
+        
+        .replacement-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            min-width: 180px;
+            transition: transform 0.3s ease;
+        }
+        
+        .replacement-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .replacement-item .from {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .replacement-item .to {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .replacement-item .arrow {
+            margin: 0 10px;
+            color: var(--text-secondary);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab:hover {
+            background: rgba(108, 92, 231, 0.3);
+        }
+        
+        .tab.active {
+            background: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .progress-bar {
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .feature-counter {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateX(150%);
+            transition: transform 0.4s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s linear infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        .selection-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .checkbox-container input {
+            margin-right: 8px;
+        }
+        
+        .customization-panel {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .panel-title {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .panel-title i {
+            margin-right: 8px;
+        }
+        
+        .keyword-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .keyword-filter input {
+            flex: 1;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            color: white;
+        }
+        
+        .keyword-filter input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .custom-keyword {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .custom-keyword input {
+            flex: 1;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            color: white;
+        }
+        
+        .custom-keyword button {
+            padding: 8px 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i> 文件处理完成！
+    </div>
+    
+    <div class="container">
+        <header>
+            <div class="decoration">
+                <div class="circle" style="width: 300px; height: 300px; top: -100px; right: -100px;"></div>
+                <div class="circle" style="width: 200px; height: 200px; bottom: -50px; left: -50px;"></div>
+            </div>
+            <div class="header-content">
+                <h1><i class="fas fa-file-code"></i> ADOFAI 自定义文件处理工具</h1>
+                <p class="subtitle">上传您的.adofai文件，自定义选择要删除的关键词，并进行值替换</p>
+            </div>
+        </header>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-file-upload"></i> 上传文件</h2>
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                <p class="upload-text" id="upload-text">拖放 .adofai 文件到此处或点击浏览文件</p>
+                <button class="btn" id="browse-btn"><i class="fas fa-folder-open"></i> 选择文件</button>
+                <input type="file" id="file-input" accept=".adofai">
+            </div>
+            
+            <div class="value-replacement">
+                <div class="replacement-item">
+                    <span class="from">true</span>
+                    <span class="arrow"><i class="fas fa-arrow-right"></i></span>
+                    <span class="to">"Enabled"</span>
+                </div>
+                <div class="replacement-item">
+                    <span class="from">false</span>
+                    <span class="arrow"><i class="fas fa-arrow-right"></i></span>
+                    <span class="to">"Disabled"</span>
+                </div>
+                <div class="replacement-item">
+                    <span class="from">null</span>
+                    <span class="arrow"><i class="fas fa-arrow-right"></i></span>
+                    <span class="to">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-cogs"></i> 处理控制</h2>
+            <div class="actions">
+                <button class="btn" id="process-btn" disabled><i class="fas fa-tools"></i> 处理文件</button>
+                <button class="btn btn-outline" id="download-btn" disabled><i class="fas fa-download"></i> 下载处理后的文件</button>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="original-lines">0</div>
+                    <div class="stat-label">原始行数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="removed-lines">0</div>
+                    <div class="stat-label">移除行数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="replaced-values">0</div>
+                    <div class="stat-label">替换值数量</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="remaining-lines">0</div>
+                    <div class="stat-label">剩余行数</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-info-circle"></i> 自定义关键词选择</h2>
+            
+            <div class="customization-panel">
+                <div class="panel-title"><i class="fas fa-sliders-h"></i> 关键词管理</div>
+                
+                <div class="custom-keyword">
+                    <input type="text" id="custom-keyword" placeholder="输入自定义关键词...">
+                    <button class="btn-sm" id="add-keyword-btn"><i class="fas fa-plus"></i> 添加</button>
+                </div>
+                
+                <div class="keyword-filter">
+                    <input type="text" id="keyword-filter" placeholder="输入关键词进行筛选...">
+                    <button class="btn btn-sm" id="select-all-btn"><i class="fas fa-check-square"></i> 全选</button>
+                    <button class="btn btn-sm btn-outline" id="deselect-all-btn"><i class="far fa-square"></i> 取消全选</button>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="events">
+                    <i class="fas fa-trash-alt"></i> 事件类型 
+                    <span class="feature-counter" id="events-counter">46</span>
+                </div>
+                <div class="tab" data-tab="configs">
+                    <i class="fas fa-cog"></i> 配置关键字 
+                    <span class="feature-counter" id="configs-counter">17</span>
+                </div>
+                <div class="tab" data-tab="preview">
+                    <i class="fas fa-file-alt"></i> 内容预览
+                </div>
+            </div>
+            
+            <div class="tab-content active" id="events-tab">
+                <div class="features-grid" id="events-grid">
+                    <!-- 事件类型将通过JS动态添加 -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="configs-tab">
+                <div class="features-grid" id="configs-grid">
+                    <!-- 配置关键字将通过JS动态添加 -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="preview-tab">
+                <div class="preview" id="preview">
+                    处理后的内容将显示在这里...
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <div class="logo">ADOFAI 自定义文件处理工具 <i class="fas fa-heart"></i></div>
+            <p>超炳</p>
+            <p>ADOFAI神奇小玩具</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 需要移除的事件类型列表（已添加MoveCamera和EmitParticle）
+            const eventsToRemove = [
+                'AddDecoration', 'AddText', 'AddObject', 'Checkpoint', 'SetHitsound', 
+                'PlaySound', 'SetPlanetRotation', 'Pause', 'AutoPlayTiles', 'ScalePlanets', 
+                'ColorTrack', 'AnimateTrack', 'RecolorTrack', 'MoveTrack', 'PositionTrack', 
+                'MoveDecorations', 'SetText', 'SetObject', 'SetDefaultText', 'CustomBackground', 
+                'Flash', 'SetFilter', 'HallofMirrors', 'ShakeScreen', 'Bloom', 'ScreenTile', 
+                'ScreenScroll', 'SetFrameRate', 'RepeatEvents', 'SetConditionalEvents', 
+                'EditorComment', 'Bookmark', 'Hold', 'SetHoldSound', 'MultiPlanet', 
+                'FreeRoam', 'FreeRoamTwirl', 'FreeRoamRemove', 'Hide', 'ScaleMargin', 'ScaleRadius',
+                'AddParticle', 'SetParticle', 'MoveCamera', 'EmitParticle'
+            ];
+            
+            // 需要移除的配置关键字列表
+            const configsToRemove = [
+                'speedTrialAim', 'songURL', 'trackTexture', 'trackTextureScale', 
+                'showDefaultBGTile', 'defaultBGTileColor', 'defaultBGShapeType', 
+                'defaultBGShapeColor', 'scalingRatio', 'legacyCamRelativeTo', 
+                'legacySpriteTiles', 'legacyTween', 'disableV15Features', 
+                'defaultTextColor', 'defaultTextShadowColor', 'congratsText', 'perfectText'
+            ];
+            
+            // DOM 元素
+            const uploadArea = document.getElementById('upload-area');
+            const uploadText = document.getElementById('upload-text');
+            const browseBtn = document.getElementById('browse-btn');
+            const fileInput = document.getElementById('file-input');
+            const processBtn = document.getElementById('process-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const previewEl = document.getElementById('preview');
+            const originalLinesEl = document.getElementById('original-lines');
+            const removedLinesEl = document.getElementById('removed-lines');
+            const replacedValuesEl = document.getElementById('replaced-values');
+            const remainingLinesEl = document.getElementById('remaining-lines');
+            const eventsGrid = document.getElementById('events-grid');
+            const configsGrid = document.getElementById('configs-grid');
+            const eventsCounter = document.getElementById('events-counter');
+            const configsCounter = document.getElementById('configs-counter');
+            const progressBar = document.getElementById('progress-bar');
+            const notification = document.getElementById('notification');
+            const particlesContainer = document.getElementById('particles');
+            const keywordFilter = document.getElementById('keyword-filter');
+            const selectAllBtn = document.getElementById('select-all-btn');
+            const deselectAllBtn = document.getElementById('deselect-all-btn');
+            const customKeywordInput = document.getElementById('custom-keyword');
+            const addKeywordBtn = document.getElementById('add-keyword-btn');
+            
+            // 存储用户选择的关键词
+            let selectedKeywords = new Set([...eventsToRemove, ...configsToRemove]);
+            let allKeywords = [...eventsToRemove, ...configsToRemove];
+            
+            // 初始化关键词列表
+            function initializeKeywords() {
+                // 清空现有列表
+                eventsGrid.innerHTML = '';
+                configsGrid.innerHTML = '';
+                
+                // 初始化事件列表
+                eventsToRemove.forEach(event => {
+                    createKeywordItem(event, eventsGrid, 'event');
+                });
+                
+                // 初始化配置关键字列表
+                configsToRemove.forEach(config => {
+                    createKeywordItem(config, configsGrid, 'config');
+                });
+            }
+            
+            // 创建关键词项目
+            function createKeywordItem(keyword, container, type) {
+                const item = document.createElement('div');
+                item.className = 'feature-item removed';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `${type}-${keyword}`;
+                checkbox.checked = selectedKeywords.has(keyword);
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        selectedKeywords.add(keyword);
+                    } else {
+                        selectedKeywords.delete(keyword);
+                    }
+                });
+                
+                const label = document.createElement('label');
+                label.htmlFor = `${type}-${keyword}`;
+                label.textContent = keyword;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+                deleteBtn.className = 'btn-sm';
+                deleteBtn.style.marginLeft = 'auto';
+                deleteBtn.style.padding = '2px 8px';
+                deleteBtn.style.background = 'rgba(255, 0, 0, 0.2)';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // 从所有关键词中删除
+                    const index = allKeywords.indexOf(keyword);
+                    if (index !== -1) {
+                        allKeywords.splice(index, 1);
+                    }
+                    
+                    // 从事件或配置列表中删除
+                    if (type === 'event') {
+                        const eventIndex = eventsToRemove.indexOf(keyword);
+                        if (eventIndex !== -1) {
+                            eventsToRemove.splice(eventIndex, 1);
+                        }
+                    } else {
+                        const configIndex = configsToRemove.indexOf(keyword);
+                        if (configIndex !== -1) {
+                            configsToRemove.splice(configIndex, 1);
+                        }
+                    }
+                    
+                    // 从选择中删除
+                    selectedKeywords.delete(keyword);
+                    
+                    // 重新初始化列表
+                    initializeKeywords();
+                    updateCounters();
+                    showNotification(`已删除关键词: ${keyword}`, 'success');
+                });
+                
+                item.appendChild(checkbox);
+                item.appendChild(label);
+                item.appendChild(deleteBtn);
+                container.appendChild(item);
+            }
+            
+            // 更新计数器
+            function updateCounters() {
+                eventsCounter.textContent = eventsToRemove.length;
+                configsCounter.textContent = configsToRemove.length;
+            }
+            
+            // 标签切换功能
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 移除所有活动标签
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    // 隐藏所有内容
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // 激活当前标签
+                    tab.classList.add('active');
+                    // 显示对应内容
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // 拖放功能
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('drag-over');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    handleFile(file);
+                }
+            });
+            
+            // 浏览按钮
+            browseBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+            
+            // 处理文件
+            processBtn.addEventListener('click', processFile);
+            
+            // 下载按钮
+            downloadBtn.addEventListener('click', () => {
+                if (!processedContent) return;
+                
+                const blob = new Blob([processedContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName.replace('.adofai', '_processed.adofai');
+                document.body.appendChild(a);
+                a.click();
+                
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+            });
+            
+            // 全选按钮
+            selectAllBtn.addEventListener('click', () => {
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = true;
+                    const keyword = checkbox.id.split('-')[1];
+                    selectedKeywords.add(keyword);
+                });
+                showNotification('已选择所有关键词', 'success');
+            });
+            
+            // 取消全选按钮
+            deselectAllBtn.addEventListener('click', () => {
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                    const keyword = checkbox.id.split('-')[1];
+                    selectedKeywords.delete(keyword);
+                });
+                showNotification('已取消选择所有关键词', 'success');
+            });
+            
+            // 添加自定义关键词
+            addKeywordBtn.addEventListener('click', () => {
+                const keyword = customKeywordInput.value.trim();
+                if (keyword) {
+                    if (!allKeywords.includes(keyword)) {
+                        allKeywords.push(keyword);
+                        selectedKeywords.add(keyword);
+                        eventsToRemove.push(keyword); // 添加到事件列表
+                        
+                        // 重新初始化列表
+                        initializeKeywords();
+                        updateCounters();
+                        customKeywordInput.value = '';
+                        showNotification(`已添加关键词: ${keyword}`, 'success');
+                    } else {
+                        showNotification('关键词已存在', 'warning');
+                    }
+                }
+            });
+            
+            // 关键词筛选
+            keywordFilter.addEventListener('input', () => {
+                const filter = keywordFilter.value.toLowerCase();
+                
+                // 筛选事件
+                document.querySelectorAll('#events-grid .feature-item').forEach(item => {
+                    const keyword = item.querySelector('label').textContent.toLowerCase();
+                    if (keyword.includes(filter)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // 筛选配置
+                document.querySelectorAll('#configs-grid .feature-item').forEach(item => {
+                    const keyword = item.querySelector('label').textContent.toLowerCase();
+                    if (keyword.includes(filter)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+            
+            // 处理选择的文件
+            function handleFile(file) {
+                if (!file.name.endsWith('.adofai')) {
+                    showNotification('请选择 .adofai 文件', 'warning');
+                    return;
+                }
+                
+                fileName = file.name;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    fileContent = e.target.result;
+                    processBtn.disabled = false;
+                    uploadText.innerHTML = `<i class="fas fa-check-circle"></i> 已选择: ${file.name}`;
+                    
+                    // 显示文件前几行作为预览
+                    const previewLines = fileContent.split('\n').slice(0, 5).join('\n');
+                    previewEl.textContent = previewLines;
+                    
+                    // 切换到预览标签页
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.querySelector('.tab[data-tab="preview"]').classList.add('active');
+                    document.getElementById('preview-tab').classList.add('active');
+                    
+                    showNotification('文件加载成功，点击"处理文件"按钮开始处理', 'success');
+                };
+                reader.readAsText(file);
+            }
+            
+            // 处理文件内容
+            function processFile() {
+                if (!fileContent) return;
+                
+                const lines = fileContent.split('\n');
+                let removedCount = 0;
+                let replacedCount = 0;
+                let processedLines = [];
+                let totalLines = lines.length;
+                
+                // 更新统计 - 原始行数
+                originalLinesEl.textContent = totalLines;
+                
+                // 重置进度条
+                progressBar.style.width = '0%';
+                
+                // 处理每一行
+                lines.forEach((line, index) => {
+                    // 更新进度条
+                    progressBar.style.width = `${((index + 1) / totalLines) * 100}%`;
+                    
+                    // 检查该行是否包含用户选择的任何关键词
+                    let shouldRemove = false;
+                    for (const keyword of selectedKeywords) {
+                        if (line.includes(keyword)) {
+                            shouldRemove = true;
+                            break;
+                        }
+                    }
+                    
+                    if (shouldRemove) {
+                        removedCount++;
+                        return; // 跳过这一行
+                    }
+                    
+                    // 执行值替换
+                    let processedLine = line;
+                    
+                    // 替换 true → "Enabled"
+                    if (line.includes('true')) {
+                        processedLine = processedLine.replace(/true/g, '"Enabled"');
+                        replacedCount++;
+                    }
+                    
+                    // 替换 false → "Disabled"
+                    if (line.includes('false')) {
+                        processedLine = processedLine.replace(/false/g, '"Disabled"');
+                        replacedCount++;
+                    }
+                    
+                    // 替换 null → 0
+                    if (line.includes('null')) {
+                        processedLine = processedLine.replace(/null/g, '0');
+                        replacedCount++;
+                    }
+                    
+                    // 跳过空行
+                    if (processedLine.trim() !== '') {
+                        processedLines.push(processedLine);
+                    }
+                });
+                
+                // 生成处理后的内容
+                processedContent = processedLines.join('\n');
+                
+                // 更新统计
+                removedLinesEl.textContent = removedCount;
+                replacedValuesEl.textContent = replacedCount;
+                remainingLinesEl.textContent = processedLines.length;
+                
+                // 启用下载按钮
+                downloadBtn.disabled = false;
+                
+                // 更新预览
+                const previewLines = processedContent.split('\n').slice(0, 5).join('\n');
+                previewEl.textContent = previewLines;
+                
+                // 显示处理完成消息
+                uploadText.innerHTML = 
+                    `<i class="fas fa-check-circle"></i> 处理完成！<br>
+                    <span class="stat">移除行数: ${removedCount}</span> | 
+                    <span class="stat">替换值: ${replacedCount}</span>`;
+                
+                showNotification('文件处理完成！点击"下载处理后的文件"保存结果', 'success');
+                createParticles(20);
+            }
+            
+            // 显示通知
+            function showNotification(message, type = 'success') {
+                notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i> ${message}`;
+                notification.style.background = type === 'success' ? 'var(--success)' : 'var(--danger)';
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // 创建粒子效果
+            function createParticles(count) {
+                // 清除现有粒子
+                particlesContainer.innerHTML = '';
+                
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.top = '100%';
+                    particle.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                    particle.style.animationDelay = `${Math.random() * 2}s`;
+                    particle.style.width = `${Math.random() * 6 + 2}px`;
+                    particle.style.height = particle.style.width;
+                    particle.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                    particlesContainer.appendChild(particle);
+                }
+            }
+            
+            // 初始化关键词列表
+            initializeKeywords();
+            updateCounters();
+            createParticles(30);
+        });
+    </script>
+</body>
+  </html>
