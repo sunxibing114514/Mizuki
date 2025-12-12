@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中日英字符统计工具</title>
+</head>
+<body>
+    <h1>中日英字符统计工具</h1>
+    
+    <div>
+        <h2>上传文件</h2>
+        <input type="file" id="fileInput">
+        <p>支持所有文本文件格式</p>
+        <div>
+            <label for="encoding">选择文件编码:</label>
+            <select id="encoding">
+                <option value="UTF-8">UTF-8</option>
+                <option value="GBK">GBK/GB2312</option>
+                <option value="Big5">Big5</option>
+                <option value="Shift_JIS">Shift_JIS (日语)</option>
+                <option value="EUC-JP">EUC-JP (日语)</option>
+                <option value="ISO-8859-1">ISO-8859-1 (西欧)</option>
+                <option value="windows-1252">windows-1252 (西欧)</option>
+            </select>
+        </div>
+    </div>
+    
+    <div>
+        <h2>统计结果</h2>
+        <div id="result">
+            <p>请上传文件以查看统计结果</p>
+        </div>
+    </div>
+    
+    <div>
+        <h2>使用说明</h2>
+        <ul>
+            <li>点击"选择文件"按钮上传任何文本文件</li>
+            <li>选择合适的文件编码（默认为UTF-8）</li>
+            <li>系统将自动统计文件中的中文字符、日语字符和英文词数</li>
+            <li>中文字符包括所有Unicode范围内的中文字符</li>
+            <li>日语字符包括平假名、片假名</li>
+            <li>英文词数只统计引号内的字符，且排除同时包含"voice"和"mp3"的行</li>
+        </ul>
+    </div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const encoding = document.getElementById('encoding').value;
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    let content;
+                    
+                    // 根据选择的编码处理文件内容
+                    if (encoding === 'UTF-8') {
+                        content = e.target.result;
+                    } else {
+                        // 对于非UTF-8编码，使用TextDecoder
+                        const arrayBuffer = e.target.result;
+                        const decoder = new TextDecoder(encoding);
+                        content = decoder.decode(arrayBuffer);
+                    }
+                    
+                    const chineseCount = countChineseCharacters(content);
+                    const japaneseCount = countJapaneseCharacters(content);
+                    const englishWordCount = countEnglishWords(content);
+                    const totalCount = chineseCount + japaneseCount;
+                    
+                    // 显示统计结果
+                    document.getElementById('result').innerHTML = `
+                        <p>文件: ${file.name}</p>
+                        <p>文件大小: ${file.size} 字节</p>
+                        <p>使用编码: ${encoding}</p>
+                        <p>中文字符数量: <strong>${chineseCount}</strong></p>
+                        <p>日语字符数量: <strong>${japaneseCount}</strong></p>
+                        <p>中日文字符总数: <strong>${totalCount}</strong></p>
+                        <p>英文词数(引号内): <strong>${englishWordCount}</strong></p>
+                    `;
+                } catch (error) {
+                    document.getElementById('result').innerHTML = `
+                        <p>读取文件时出错: ${error.message}</p>
+                        <p>请尝试选择其他编码格式</p>
+                    `;
+                }
+            };
+            
+            reader.onerror = function() {
+                document.getElementById('result').innerHTML = '<p>读取文件时出错</p>';
+            };
+            
+            // 根据编码选择读取方式
+            if (encoding === 'UTF-8') {
+                reader.readAsText(file, 'UTF-8');
+            } else {
+                reader.readAsArrayBuffer(file);
+            }
+        });
+        
+        function countChineseCharacters(text) {
+            // 使用正则表达式匹配中文字符
+            // 中文字符的Unicode范围: \u4e00-\u9fff
+            const chineseRegex = /[\u4e00-\u9fff]/g;
+            const matches = text.match(chineseRegex);
+            return matches ? matches.length : 0;
+        }
+        
+        function countJapaneseCharacters(text) {
+            // 使用正则表达式匹配日语字符
+            // 平假名: \u3040-\u309f
+            // 片假名: \u30a0-\u30ff
+            const hiraganaRegex = /[\u3040-\u309f]/g;
+            const katakanaRegex = /[\u30a0-\u30ff]/g;
+            
+            const hiraganaMatches = text.match(hiraganaRegex) || [];
+            const katakanaMatches = text.match(katakanaRegex) || [];
+            
+            return hiraganaMatches.length + katakanaMatches.length;
+        }
+        
+        function countEnglishWords(text) {
+            const lines = text.split('\n');
+            let totalWordCount = 0;
+            
+            for (const line of lines) {
+                // 跳过同时包含"voice"和"mp3"的行
+                if (line.includes('voice') && line.includes('mp3')) {
+                    continue;
+                }
+                
+                // 匹配双引号内的内容
+                const quotedTextRegex = /"([^"]*)"/g;
+                let match;
+                
+                while ((match = quotedTextRegex.exec(line)) !== null) {
+                    const quotedText = match[1];
+                    // 统计英文单词（由字母组成，忽略数字和特殊字符）
+                    const wordRegex = /\b[a-zA-Z]+\b/g;
+                    const words = quotedText.match(wordRegex);
+                    
+                    if (words) {
+                        totalWordCount += words.length;
+                    }
+                }
+            }
+            
+            return totalWordCount;
+        }
+        
+        // 自动检测编码功能（简化版）
+        function detectEncoding(arrayBuffer) {
+            const bytes = new Uint8Array(arrayBuffer);
+            
+            // 检查UTF-8 BOM
+            if (bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
+                return 'UTF-8';
+            }
+            
+            // 检查UTF-16 LE BOM
+            if (bytes[0] === 0xFF && bytes[1] === 0xFE) {
+                return 'UTF-16LE';
+            }
+            
+            // 检查UTF-16 BE BOM
+            if (bytes[0] === 0xFE && bytes[1] === 0xFF) {
+                return 'UTF-16BE';
+            }
+            
+            // 简单启发式检测（实际应用中需要更复杂的检测逻辑）
+            return 'UTF-8'; // 默认返回UTF-8
+        }
+    </script>
+</body>
+</html>
