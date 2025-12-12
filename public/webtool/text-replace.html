@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TXT 文本替换工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            width: auto;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            width: 400px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            color: black;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #555;
+            color: white;
+        }
+
+        button {
+            background: #ff4081;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #ff79b0;
+        }
+
+        /* 透明的 MOD 按钮 */
+        #modButton {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            padding: 10px 15px;
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        #modButton:hover {
+            background: white;
+            color: black;
+            transform: scale(1.05);
+        }
+
+        /* MOD 界面居中 */
+        #modOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* MOD 容器 */
+        #modContainer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            text-align: center;
+            width: 450px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>TXT 文本替换工具</h1>
+    <button id="modButton" onclick="openMod()">ADOFAI2.4.0</button>
+
+    <div class="container">
+        <div class="panel">
+            <input type="file" id="fileInput" accept=".txt">
+            <table>
+                <thead>
+                    <tr>
+                        <th>查找</th>
+                        <th>替换为</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="replaceTable">
+                </tbody>
+            </table>
+            <button onclick="addRow()">添加替换项</button>
+            <button onclick="replaceText()">执行替换</button>
+        </div>
+
+        <div class="panel">
+            <textarea id="outputText" rows="10" readonly></textarea>
+            <button onclick="downloadFile()">下载 TXT</button>
+        </div>
+    </div>
+
+    <!-- MOD 界面 -->
+    <div id="modOverlay">
+        <div id="modContainer">
+            <h2>ADOFAI2.4.0 Mod</h2>
+            <input type="file" id="adofaiInput" accept=".adofai">
+            <button onclick="convertAdoFile()">转换</button>
+            <textarea id="modOutput" rows="10" readonly></textarea>
+            <button onclick="downloadAdoFile()">下载 ADOFAI</button>
+            <button onclick="closeMod()">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        function openMod() {
+            document.getElementById('modOverlay').style.display = 'flex';
+        }
+
+        function closeMod() {
+            document.getElementById('modOverlay').style.display = 'none';
+        }
+
+        function convertAdoFile() {
+            const fileInput = document.getElementById('adofaiInput');
+            const output = document.getElementById('modOutput');
+
+            if (!fileInput.files.length) {
+                alert("请上传 .adofai 文件");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let content = e.target.result;
+                content = content.replace(/\btrue\b/g, '"Enabled"')
+                                 .replace(/\bfalse\b/g, '"Disabled"')
+                                 .replace(/\bnull\b/g, '0');
+                output.value = content;
+            };
+            reader.readAsText(fileInput.files[0]);
+        }
+
+        function downloadAdoFile() {
+            const text = document.getElementById('modOutput').value;
+            const blob = new Blob([text], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "converted.adofai";
+            link.click();
+        }
+    </script>
+
+</body>
+</html>
