@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Math Solver v2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/nerdamer.core.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Algebra.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Solve.js"></script>
+
+    <script src="https://unpkg.com/d3@3/d3.min.js"></script>
+    <script src="https://unpkg.com/function-plot@1/dist/function-plot.js"></script>
+
+    <style>
+        .math-btn {
+            @apply bg-white hover:bg-blue-50 border border-gray-200 text-gray-700 font-medium py-2 px-2 rounded shadow-sm transition text-lg select-none active:bg-blue-100;
+        }
+        #plot { width: 100%; height: 400px; }
+        /* 针对方程组输入的特殊样式 */
+        .system-input {
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col items-center py-8">
+
+    <div class="w-full max-w-5xl bg-white shadow-2xl rounded-2xl overflow-hidden">
+        
+        <div class="bg-indigo-600 p-6 text-white flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold flex items-center gap-3">
+                    <span>📐</span> Microsoft Math (复刻版 v2)
+                </h1>
+                <p class="text-indigo-200 text-sm mt-1">支持：科学计算 · 函数绘图 · 方程组求解</p>
+            </div>
+            <div class="bg-indigo-700 rounded-lg p-1 flex text-sm">
+                <button onclick="switchMode('calc')" id="btn-mode-calc" class="px-4 py-2 rounded-md bg-white text-indigo-700 font-bold shadow transition">计算/绘图</button>
+                <button onclick="switchMode('equation')" id="btn-mode-equation" class="px-4 py-2 rounded-md text-white hover:bg-indigo-600 transition">方程/方程组</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3">
+            
+            <div class="col-span-1 border-r border-gray-200 bg-gray-50 flex flex-col h-full">
+                
+                <div id="panel-calc" class="p-5 flex-1">
+                    <label class="block text-sm font-bold text-gray-600 mb-2">输入表达式或函数:</label>
+                    <input type="text" id="input-calc" 
+                        class="w-full text-lg p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-mono mb-4"
+                        placeholder="例如: sin(x) 或 25 * 4" value="x^2 - 1">
+                    
+                    <button onclick="processCalc()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow transition">
+                        计算 / 绘图
+                    </button>
+                    <p class="text-xs text-gray-400 mt-2 text-center">输入带有 x 的式子将自动绘图</p>
+                </div>
+
+                <div id="panel-equation" class="p-5 hidden flex-1">
+                    <label class="block text-sm font-bold text-gray-600 mb-2">输入方程 (支持方程组):</label>
+                    <div class="relative">
+                        <textarea id="input-eq" rows="5"
+                            class="w-full system-input text-lg p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none resize-none"
+                            placeholder="x + y = 10&#10;x - y = 2">x + y = 10
+x - y = 2</textarea>
+                        <div class="absolute top-2 right-2 text-xs bg-gray-100 px-2 py-1 rounded text-gray-500">每行一个</div>
+                    </div>
+                    
+                    <button onclick="processEquation()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow transition">
+                        解方程
+                    </button>
+                </div>
+
+                <div class="p-5 border-t border-gray-200 bg-white">
+                    <div class="text-xs text-gray-400 mb-2 uppercase tracking-wide font-bold">常用符号</div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button class="math-btn" onclick="insertSymbol('^2')">$x^2$</button>
+                        <button class="math-btn" onclick="insertSymbol('sqrt(')">$\sqrt{x}$</button>
+                        <button class="math-btn" onclick="insertSymbol('sin(')">$\sin$</button>
+                        <button class="math-btn" onclick="insertSymbol('cos(')">$\cos$</button>
+                        <button class="math-btn" onclick="insertSymbol('(')">(</button>
+                        <button class="math-btn" onclick="insertSymbol(')')">)</button>
+                        <button class="math-btn" onclick="insertSymbol('+')">$+$</button>
+                        <button class="math-btn" onclick="insertSymbol('-')">$-$</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-2 bg-white flex flex-col min-h-[500px]">
+                
+                <div class="p-8 border-b border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Result</h3>
+                    <div id="output-area" class="text-2xl text-gray-800 font-medium min-h-[60px] flex items-center">
+                        <span class="text-gray-300 italic">等待输入...</span>
+                    </div>
+                </div>
+
+                <div id="graph-container" class="flex-1 relative bg-gray-50 overflow-hidden flex flex-col">
+                    <div id="plot" class="flex-1 w-full h-full"></div>
+                    <div id="plot-placeholder" class="absolute inset-0 flex items-center justify-center text-gray-400 bg-gray-50/90 z-10 pointer-events-none hidden">
+                        此处不显示图像
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === 全局变量 ===
+        let currentMode = 'calc'; 
+        const calcInput = document.getElementById('input-calc');
+        const eqInput = document.getElementById('input-eq');
+        const outputArea = document.getElementById('output-area');
+
+        // === 1. 模式切换逻辑 ===
+        function switchMode(mode) {
+            currentMode = mode;
+            const btnCalc = document.getElementById('btn-mode-calc');
+            const btnEq = document.getElementById('btn-mode-equation');
+            const panelCalc = document.getElementById('panel-calc');
+            const panelEq = document.getElementById('panel-equation');
+
+            if (mode === 'calc') {
+                // UI 状态
+                btnCalc.className = "px-4 py-2 rounded-md bg-white text-indigo-700 font-bold shadow transition";
+                btnEq.className = "px-4 py-2 rounded-md text-white hover:bg-indigo-600 transition";
+                // 面板显示
+                panelCalc.classList.remove('hidden');
+                panelEq.classList.add('hidden');
+                // 提示
+                outputArea.innerHTML = '<span class="text-gray-300 italic">切换到计算模式...</span>';
+            } else {
+                // UI 状态
+                btnEq.className = "px-4 py-2 rounded-md bg-white text-indigo-700 font-bold shadow transition";
+                btnCalc.className = "px-4 py-2 rounded-md text-white hover:bg-indigo-600 transition";
+                // 面板显示
+                panelEq.classList.remove('hidden');
+                panelCalc.classList.add('hidden');
+                // 提示
+                outputArea.innerHTML = '<span class="text-gray-300 italic">切换到方程模式...</span>';
+            }
+        }
+
+        // === 2. 插入符号 ===
+        function insertSymbol(val) {
+            const target = currentMode === 'calc' ? calcInput : eqInput;
+            target.value += val;
+            target.focus();
+        }
+
+        // === 3. 核心：普通计算与绘图 ===
+        function processCalc() {
+            const expr = calcInput.value.trim();
+            if (!expr) return;
+
+            try {
+                // A. 尝试计算结果 (使用 nerdamer)
+                // nerdamer 既能做符号运算也能做数值运算
+                const result = nerdamer(expr).toString();
+                const latex = nerdamer(expr).toTeX();
+
+                outputArea.innerHTML = `$$ ${latex} = ${result} $$`;
+                MathJax.typesetPromise([outputArea]);
+
+                // B. 尝试绘图 (如果包含 x)
+                if (expr.includes('x')) {
+                    document.getElementById('plot-placeholder').classList.add('hidden');
+                    drawGraph(expr);
+                } else {
+                    document.getElementById('plot-placeholder').classList.remove('hidden');
+                    // 清空绘图
+                    document.getElementById('plot').innerHTML = '';
+                }
+
+            } catch (e) {
+                outputArea.innerHTML = `<span class="text-red-500 text-lg">⚠️ 错误: ${e.message}</span>`;
+            }
+        }
+
+        // === 4. 核心：方程求解器 (支持方程组) ===
+        function processEquation() {
+            // 获取多行输入
+            const rawInput = eqInput.value.trim();
+            if (!rawInput) return;
+
+            // 按换行符分割，并过滤空行
+            const equations = rawInput.split('\n').filter(line => line.trim() !== '');
+
+            try {
+                let solution;
+                let latexOutput = "";
+
+                if (equations.length === 1) {
+                    // --- 单个方程 ---
+                    // 格式: solve(equation, variable)
+                    const eq = equations[0];
+                    // 默认解 x，如果没有 x 则解第一个找到的变量
+                    solution = nerdamer.solve(eq, 'x'); 
+                    
+                    // 格式化输出
+                    const solStr = solution.toString(); // 结果是 [1, -1] 这种数组格式
+                    latexOutput = `\\text{解集: } \\quad x \\in \\{ ${solution.toTeX()} \\}`;
+                    
+                } else {
+                    // --- 方程组 ---
+                    // nerdamer.solveEquations(['x+y=10', 'x-y=2'])
+                    solution = nerdamer.solveEquations(equations);
+                    
+                    // solution 返回的是对象数组 [{x:6, y:4}]
+                    if (solution.length > 0) {
+                        // 构建 LaTeX 格式的方程组解
+                        const solObj = solution[0]; // 取第一组解
+                        let parts = [];
+                        for (let [key, val] of solution) { 
+                            // nerdamer 返回格式比较特殊，有时是数组包含键值对
+                            // 这里简化处理，通常解线性方程组是一个数组
+                            parts.push(`${key} = ${val}`);
+                        }
+                        
+                        // 修正：nerdamer.solveEquations 返回的是一个数组，里面是 [key, value] 形式
+                        // 例如: [ ["x", 6], ["y", 4] ]
+                        
+                        let lines = [];
+                        solution.forEach(pair => {
+                            // pair 是 ["x", 6]
+                            const variable = pair[0];
+                            const value = nerdamer(pair[1]).toTeX(); // 转一下 latex
+                            lines.push(`${variable} = ${value}`);
+                        });
+                        
+                        latexOutput = `\\begin{cases} ${lines.join(' \\\\ ')} \\end{cases}`;
+                    } else {
+                        latexOutput = "\\text{无解或无法求解}";
+                    }
+                }
+
+                outputArea.innerHTML = `$$ ${latexOutput} $$`;
+                MathJax.typesetPromise([outputArea]);
+                
+                // 方程模式下不绘图，显示占位符
+                document.getElementById('plot-placeholder').classList.remove('hidden');
+                document.getElementById('plot').innerHTML = '';
+                document.getElementById('plot-placeholder').innerText = "方程模式暂不支持绘图";
+
+            } catch (e) {
+                console.error(e);
+                outputArea.innerHTML = `<span class="text-red-500">无法求解: 请检查方程格式 (例如: x+y=5)</span>`;
+            }
+        }
+
+        // === 5. 绘图函数 ===
+        function drawGraph(expression) {
+            try {
+                // 清理表达式 (Function Plot 不支持等号，只支持 y = ...)
+                let cleanExpr = expression;
+                if(cleanExpr.includes('=')) {
+                    cleanExpr = cleanExpr.split('=')[1]; // 取等号右边
+                }
+
+                const width = document.getElementById('graph-container').clientWidth;
+                const height = document.getElementById('graph-container').clientHeight || 400;
+
+                functionPlot({
+                    target: '#plot',
+                    width: width,
+                    height: height,
+                    grid: true,
+                    data: [{
+                        fn: cleanExpr,
+                        color: '#4F46E5', // Indigo-600
+                        graphType: 'polyline'
+                    }],
+                    xAxis: {domain: [-10, 10]},
+                    yAxis: {domain: [-10, 10]}
+                });
+            } catch (e) {
+                console.log("绘图失败");
+            }
+        }
+
+        // 初始化
+        window.onload = function() {
+            processCalc(); // 默认跑一次
+        };
+    </script>
+</body>
+</html>
