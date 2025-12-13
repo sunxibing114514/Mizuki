@@ -3,297 +3,1706 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Math Solver v2</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-        window.MathJax = {
-            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-            svg: { fontCache: 'global' }
-        };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/nerdamer.core.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Algebra.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Solve.js"></script>
-
-    <script src="https://unpkg.com/d3@3/d3.min.js"></script>
-    <script src="https://unpkg.com/function-plot@1/dist/function-plot.js"></script>
-
+    <title>高级数学求解器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .math-btn {
-            @apply bg-white hover:bg-blue-50 border border-gray-200 text-gray-700 font-medium py-2 px-2 rounded shadow-sm transition text-lg select-none active:bg-blue-100;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        #plot { width: 100%; height: 400px; }
-        /* 针对方程组输入的特殊样式 */
-        .system-input {
-            font-family: 'Courier New', Courier, monospace;
-            line-height: 1.5;
+
+        :root {
+            --primary: #4a6bff;
+            --primary-dark: #3a5bef;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(74, 107, 255, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        .header .version {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            height: fit-content;
+        }
+
+        .sidebar h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+            font-size: 1.4rem;
+        }
+
+        .category-list {
+            list-style: none;
+        }
+
+        .category-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-item:hover {
+            background: #e9ecef;
+        }
+
+        .category-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .category-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 输入区 */
+        .input-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .input-header h2 {
+            color: var(--dark);
+            font-size: 1.5rem;
+        }
+
+        .input-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            padding: 8px 20px;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .math-editor {
+            width: 100%;
+            min-height: 120px;
+            padding: 20px;
+            font-size: 1.2rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            resize: vertical;
+            font-family: 'Consolas', 'Monaco', monospace;
+            line-height: 1.6;
+        }
+
+        .math-editor:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .symbols-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .symbol-btn {
+            padding: 12px 5px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+            font-family: 'Cambria Math', 'STIX Two Math', serif;
+        }
+
+        .symbol-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .symbol-btn.operator {
+            background: #e8f4ff;
+            border-color: #b6d4fe;
+        }
+
+        .symbol-btn.function {
+            background: #f0f9ff;
+            border-color: #b6e3fe;
+        }
+
+        .symbol-btn.matrix {
+            background: #f8f9fc;
+            border-color: #d0d7e7;
+        }
+
+        /* 高级输入区 */
+        .advanced-input {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .matrix-input {
+            margin-bottom: 20px;
+        }
+
+        .matrix-editor {
+            display: inline-block;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+
+        .matrix-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .matrix-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .matrix-cell {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .matrix-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-large {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* 结果区 */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .result-card h3 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+            font-size: 1.3rem;
+        }
+
+        .result-content {
+            font-family: 'Cambria Math', 'STIX Two Math', serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            min-height: 100px;
+        }
+
+        .result-content.math {
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+
+        .graph-container {
+            width: 100%;
+            height: 300px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .steps-list {
+            list-style: none;
+        }
+
+        .step-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .practice-list {
+            list-style: decimal;
+            padding-left: 20px;
+        }
+
+        .practice-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .symbols-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .symbols-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col items-center py-8">
-
-    <div class="w-full max-w-5xl bg-white shadow-2xl rounded-2xl overflow-hidden">
-        
-        <div class="bg-indigo-600 p-6 text-white flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-bold flex items-center gap-3">
-                    <span>📐</span> Microsoft Math (复刻版 v2)
-                </h1>
-                <p class="text-indigo-200 text-sm mt-1">支持：科学计算 · 函数绘图 · 方程组求解</p>
-            </div>
-            <div class="bg-indigo-700 rounded-lg p-1 flex text-sm">
-                <button onclick="switchMode('calc')" id="btn-mode-calc" class="px-4 py-2 rounded-md bg-white text-indigo-700 font-bold shadow transition">计算/绘图</button>
-                <button onclick="switchMode('equation')" id="btn-mode-equation" class="px-4 py-2 rounded-md text-white hover:bg-indigo-600 transition">方程/方程组</button>
-            </div>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-calculator"></i> 高级数学求解器</h1>
+            <span class="version">v2.0 - 全功能版</span>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3">
-            
-            <div class="col-span-1 border-r border-gray-200 bg-gray-50 flex flex-col h-full">
-                
-                <div id="panel-calc" class="p-5 flex-1">
-                    <label class="block text-sm font-bold text-gray-600 mb-2">输入表达式或函数:</label>
-                    <input type="text" id="input-calc" 
-                        class="w-full text-lg p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-mono mb-4"
-                        placeholder="例如: sin(x) 或 25 * 4" value="x^2 - 1">
-                    
-                    <button onclick="processCalc()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow transition">
-                        计算 / 绘图
-                    </button>
-                    <p class="text-xs text-gray-400 mt-2 text-center">输入带有 x 的式子将自动绘图</p>
+        <div class="sidebar">
+            <h2><i class="fas fa-th-large"></i> 功能分类</h2>
+            <ul class="category-list">
+                <li class="category-item active" data-category="basic">
+                    <i class="fas fa-calculator"></i> 基础运算
+                </li>
+                <li class="category-item" data-category="algebra">
+                    <i class="fas fa-superscript"></i> 代数方程
+                </li>
+                <li class="category-item" data-category="calculus">
+                    <i class="fas fa-infinity"></i> 微积分
+                </li>
+                <li class="category-item" data-category="matrix">
+                    <i class="fas fa-th"></i> 线性代数
+                </li>
+                <li class="category-item" data-category="statistics">
+                    <i class="fas fa-chart-bar"></i> 统计概率
+                </li>
+                <li class="category-item" data-category="function">
+                    <i class="fas fa-chart-line"></i> 函数绘图
+                </li>
+                <li class="category-item" data-category="trigonometry">
+                    <i class="fas fa-circle"></i> 三角函数
+                </li>
+                <li class="category-item" data-category="system">
+                    <i class="fas fa-sitemap"></i> 方程组
+                </li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="input-card">
+                <div class="input-header">
+                    <h2 id="current-category">基础运算</h2>
+                    <div class="input-tabs">
+                        <button class="tab-btn active" data-tab="text">文本输入</button>
+                        <button class="tab-btn" data-tab="matrix">矩阵输入</button>
+                        <button class="tab-btn" data-tab="system">方程组输入</button>
+                    </div>
                 </div>
 
-                <div id="panel-equation" class="p-5 hidden flex-1">
-                    <label class="block text-sm font-bold text-gray-600 mb-2">输入方程 (支持方程组):</label>
-                    <div class="relative">
-                        <textarea id="input-eq" rows="5"
-                            class="w-full system-input text-lg p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none resize-none"
-                            placeholder="x + y = 10&#10;x - y = 2">x + y = 10
-x - y = 2</textarea>
-                        <div class="absolute top-2 right-2 text-xs bg-gray-100 px-2 py-1 rounded text-gray-500">每行一个</div>
+                <!-- 文本输入 -->
+                <div class="tab-content active" data-tab="text">
+                    <textarea class="math-editor" id="math-input" placeholder="请输入数学表达式，例如：2x^2 + 3x - 5 = 0"></textarea>
+                    <div class="symbols-grid" id="symbols-basic">
+                        <!-- 基础运算符号由JS动态生成 -->
                     </div>
-                    
-                    <button onclick="processEquation()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow transition">
-                        解方程
-                    </button>
                 </div>
 
-                <div class="p-5 border-t border-gray-200 bg-white">
-                    <div class="text-xs text-gray-400 mb-2 uppercase tracking-wide font-bold">常用符号</div>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button class="math-btn" onclick="insertSymbol('^2')">$x^2$</button>
-                        <button class="math-btn" onclick="insertSymbol('sqrt(')">$\sqrt{x}$</button>
-                        <button class="math-btn" onclick="insertSymbol('sin(')">$\sin$</button>
-                        <button class="math-btn" onclick="insertSymbol('cos(')">$\cos$</button>
-                        <button class="math-btn" onclick="insertSymbol('(')">(</button>
-                        <button class="math-btn" onclick="insertSymbol(')')">)</button>
-                        <button class="math-btn" onclick="insertSymbol('+')">$+$</button>
-                        <button class="math-btn" onclick="insertSymbol('-')">$-$</button>
+                <!-- 矩阵输入 -->
+                <div class="tab-content" data-tab="matrix">
+                    <div class="matrix-input">
+                        <h4><i class="fas fa-th"></i> 矩阵A</h4>
+                        <div class="matrix-editor" id="matrix-a">
+                            <div class="matrix-row">
+                                <input type="text" class="matrix-cell" value="1">
+                                <input type="text" class="matrix-cell" value="2">
+                            </div>
+                            <div class="matrix-row">
+                                <input type="text" class="matrix-cell" value="3">
+                                <input type="text" class="matrix-cell" value="4">
+                            </div>
+                        </div>
+                        <div class="matrix-controls">
+                            <button class="btn btn-primary" id="btn-resize-a"><i class="fas fa-expand-alt"></i> 调整大小</button>
+                            <button class="btn btn-success" id="btn-clear-a"><i class="fas fa-trash"></i> 清空</button>
+                        </div>
                     </div>
+
+                    <div class="matrix-input">
+                        <h4><i class="fas fa-th"></i> 矩阵B</h4>
+                        <div class="matrix-editor" id="matrix-b">
+                            <div class="matrix-row">
+                                <input type="text" class="matrix-cell" value="1">
+                                <input type="text" class="matrix-cell" value="0">
+                            </div>
+                            <div class="matrix-row">
+                                <input type="text" class="matrix-cell" value="0">
+                                <input type="text" class="matrix-cell" value="1">
+                            </div>
+                        </div>
+                        <div class="matrix-controls">
+                            <button class="btn btn-primary" id="btn-resize-b"><i class="fas fa-expand-alt"></i> 调整大小</button>
+                            <button class="btn btn-success" id="btn-clear-b"><i class="fas fa-trash"></i> 清空</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 方程组输入 -->
+                <div class="tab-content" data-tab="system">
+                    <div id="system-input">
+                        <div class="equation-row">
+                            <input type="text" class="equation-input" value="2x + 3y" placeholder="左边表达式">
+                            <span class="equals">=</span>
+                            <input type="text" class="equation-input" value="5" placeholder="右边表达式">
+                            <button class="btn btn-danger btn-remove-eq"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="equation-row">
+                            <input type="text" class="equation-input" value="x - y" placeholder="左边表达式">
+                            <span class="equals">=</span>
+                            <input type="text" class="equation-input" value="1" placeholder="右边表达式">
+                            <button class="btn btn-danger btn-remove-eq"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="action-buttons" style="margin-top: 20px;">
+                        <button class="btn btn-success" id="btn-add-eq"><i class="fas fa-plus"></i> 添加方程</button>
+                        <button class="btn btn-primary" id="btn-solve-system"><i class="fas fa-calculator"></i> 求解方程组</button>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary btn-large" id="btn-solve">
+                        <i class="fas fa-calculator"></i> 计算求解
+                    </button>
+                    <button class="btn btn-success btn-large" id="btn-graph">
+                        <i class="fas fa-chart-line"></i> 绘制图形
+                    </button>
+                    <button class="btn btn-secondary btn-large" id="btn-steps">
+                        <i class="fas fa-list-ol"></i> 显示步骤
+                    </button>
+                    <button class="btn btn-primary btn-large" id="btn-clear">
+                        <i class="fas fa-broom"></i> 清空
+                    </button>
                 </div>
             </div>
 
-            <div class="col-span-2 bg-white flex flex-col min-h-[500px]">
-                
-                <div class="p-8 border-b border-gray-100">
-                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Result</h3>
-                    <div id="output-area" class="text-2xl text-gray-800 font-medium min-h-[60px] flex items-center">
-                        <span class="text-gray-300 italic">等待输入...</span>
+            <div class="results-grid">
+                <div class="result-card">
+                    <h3><i class="fas fa-check-circle"></i> 计算结果</h3>
+                    <div class="result-content math" id="result-output">等待计算...</div>
+                </div>
+
+                <div class="result-card">
+                    <h3><i class="fas fa-list-ol"></i> 解题步骤</h3>
+                    <div class="result-content">
+                        <ul class="steps-list" id="steps-output">
+                            <li class="step-item">输入表达式后点击"计算求解"查看步骤</li>
+                        </ul>
                     </div>
                 </div>
 
-                <div id="graph-container" class="flex-1 relative bg-gray-50 overflow-hidden flex flex-col">
-                    <div id="plot" class="flex-1 w-full h-full"></div>
-                    <div id="plot-placeholder" class="absolute inset-0 flex items-center justify-center text-gray-400 bg-gray-50/90 z-10 pointer-events-none hidden">
-                        此处不显示图像
+                <div class="result-card">
+                    <h3><i class="fas fa-chart-line"></i> 函数图像</h3>
+                    <div class="graph-container">
+                        <canvas id="graph-canvas"></canvas>
                     </div>
                 </div>
-                
+
+                <div class="result-card">
+                    <h3><i class="fas fa-lightbulb"></i> 相关练习</h3>
+                    <div class="result-content">
+                        <ol class="practice-list" id="practice-output">
+                            <li class="practice-item">2x + 5 = 13</li>
+                            <li class="practice-item">x² - 4x + 4 = 0</li>
+                            <li class="practice-item">∫(2x + 3) dx</li>
+                        </ol>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- 引入math.js库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+    <!-- 引入Chart.js用于绘图 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
-        // === 全局变量 ===
-        let currentMode = 'calc'; 
-        const calcInput = document.getElementById('input-calc');
-        const eqInput = document.getElementById('input-eq');
-        const outputArea = document.getElementById('output-area');
-
-        // === 1. 模式切换逻辑 ===
-        function switchMode(mode) {
-            currentMode = mode;
-            const btnCalc = document.getElementById('btn-mode-calc');
-            const btnEq = document.getElementById('btn-mode-equation');
-            const panelCalc = document.getElementById('panel-calc');
-            const panelEq = document.getElementById('panel-equation');
-
-            if (mode === 'calc') {
-                // UI 状态
-                btnCalc.className = "px-4 py-2 rounded-md bg-white text-indigo-700 font-bold shadow transition";
-                btnEq.className = "px-4 py-2 rounded-md text-white hover:bg-indigo-600 transition";
-                // 面板显示
-                panelCalc.classList.remove('hidden');
-                panelEq.classList.add('hidden');
-                // 提示
-                outputArea.innerHTML = '<span class="text-gray-300 italic">切换到计算模式...</span>';
-            } else {
-                // UI 状态
-                btnEq.className = "px-4 py-2 rounded-md bg-white text-indigo-700 font-bold shadow transition";
-                btnCalc.className = "px-4 py-2 rounded-md text-white hover:bg-indigo-600 transition";
-                // 面板显示
-                panelEq.classList.remove('hidden');
-                panelCalc.classList.add('hidden');
-                // 提示
-                outputArea.innerHTML = '<span class="text-gray-300 italic">切换到方程模式...</span>';
+        // 主应用代码
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化数学求解器
+            const solver = new MathSolver();
+            
+            // 初始化UI控制器
+            const ui = new UIController(solver);
+            ui.init();
+            
+            // 初始化图形绘制器
+            const grapher = new GraphPlotter('graph-canvas');
+            
+            // 初始化示例
+            ui.loadExamples();
+        });
+    </script>
+    
+    <script>
+        // 主应用类
+        class MathSolver {
+            constructor() {
+                this.math = math;
+                this.setupCustomFunctions();
             }
-        }
-
-        // === 2. 插入符号 ===
-        function insertSymbol(val) {
-            const target = currentMode === 'calc' ? calcInput : eqInput;
-            target.value += val;
-            target.focus();
-        }
-
-        // === 3. 核心：普通计算与绘图 ===
-        function processCalc() {
-            const expr = calcInput.value.trim();
-            if (!expr) return;
-
-            try {
-                // A. 尝试计算结果 (使用 nerdamer)
-                // nerdamer 既能做符号运算也能做数值运算
-                const result = nerdamer(expr).toString();
-                const latex = nerdamer(expr).toTeX();
-
-                outputArea.innerHTML = `$$ ${latex} = ${result} $$`;
-                MathJax.typesetPromise([outputArea]);
-
-                // B. 尝试绘图 (如果包含 x)
-                if (expr.includes('x')) {
-                    document.getElementById('plot-placeholder').classList.add('hidden');
-                    drawGraph(expr);
-                } else {
-                    document.getElementById('plot-placeholder').classList.remove('hidden');
-                    // 清空绘图
-                    document.getElementById('plot').innerHTML = '';
-                }
-
-            } catch (e) {
-                outputArea.innerHTML = `<span class="text-red-500 text-lg">⚠️ 错误: ${e.message}</span>`;
-            }
-        }
-
-        // === 4. 核心：方程求解器 (支持方程组) ===
-        function processEquation() {
-            // 获取多行输入
-            const rawInput = eqInput.value.trim();
-            if (!rawInput) return;
-
-            // 按换行符分割，并过滤空行
-            const equations = rawInput.split('\n').filter(line => line.trim() !== '');
-
-            try {
-                let solution;
-                let latexOutput = "";
-
-                if (equations.length === 1) {
-                    // --- 单个方程 ---
-                    // 格式: solve(equation, variable)
-                    const eq = equations[0];
-                    // 默认解 x，如果没有 x 则解第一个找到的变量
-                    solution = nerdamer.solve(eq, 'x'); 
-                    
-                    // 格式化输出
-                    const solStr = solution.toString(); // 结果是 [1, -1] 这种数组格式
-                    latexOutput = `\\text{解集: } \\quad x \\in \\{ ${solution.toTeX()} \\}`;
-                    
-                } else {
-                    // --- 方程组 ---
-                    // nerdamer.solveEquations(['x+y=10', 'x-y=2'])
-                    solution = nerdamer.solveEquations(equations);
-                    
-                    // solution 返回的是对象数组 [{x:6, y:4}]
-                    if (solution.length > 0) {
-                        // 构建 LaTeX 格式的方程组解
-                        const solObj = solution[0]; // 取第一组解
-                        let parts = [];
-                        for (let [key, val] of solution) { 
-                            // nerdamer 返回格式比较特殊，有时是数组包含键值对
-                            // 这里简化处理，通常解线性方程组是一个数组
-                            parts.push(`${key} = ${val}`);
+            
+            setupCustomFunctions() {
+                // 扩展math.js功能
+                const self = this;
+                
+                // 求解方程（一元一次、一元二次）
+                math.solveEquation = function(equation) {
+                    try {
+                        if (!equation.includes('=')) {
+                            return { error: '无效的方程格式' };
                         }
                         
-                        // 修正：nerdamer.solveEquations 返回的是一个数组，里面是 [key, value] 形式
-                        // 例如: [ ["x", 6], ["y", 4] ]
+                        const [left, right] = equation.split('=');
+                        const expr = math.simplify(`${left} - (${right})`);
+                        const poly = math.polynomial(expr.toString());
                         
-                        let lines = [];
-                        solution.forEach(pair => {
-                            // pair 是 ["x", 6]
-                            const variable = pair[0];
-                            const value = nerdamer(pair[1]).toTeX(); // 转一下 latex
-                            lines.push(`${variable} = ${value}`);
-                        });
-                        
-                        latexOutput = `\\begin{cases} ${lines.join(' \\\\ ')} \\end{cases}`;
+                        if (poly.coefficients.length === 2) {
+                            // 一元一次方程: ax + b = 0
+                            const a = poly.coefficients[1];
+                            const b = poly.coefficients[0];
+                            return { type: 'linear', solution: -b / a };
+                        } else if (poly.coefficients.length === 3) {
+                            // 一元二次方程: ax² + bx + c = 0
+                            const a = poly.coefficients[2];
+                            const b = poly.coefficients[1];
+                            const c = poly.coefficients[0];
+                            const discriminant = b * b - 4 * a * c;
+                            
+                            if (discriminant > 0) {
+                                const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+                                const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+                                return { 
+                                    type: 'quadratic', 
+                                    solutions: [x1, x2],
+                                    discriminant: discriminant
+                                };
+                            } else if (Math.abs(discriminant) < 1e-10) {
+                                const x = -b / (2 * a);
+                                return { 
+                                    type: 'quadratic', 
+                                    solutions: [x],
+                                    discriminant: 0
+                                };
+                            } else {
+                                const real = -b / (2 * a);
+                                const imag = Math.sqrt(-discriminant) / (2 * a);
+                                return { 
+                                    type: 'quadratic', 
+                                    solutions: [
+                                        { re: real, im: imag },
+                                        { re: real, im: -imag }
+                                    ],
+                                    discriminant: discriminant
+                                };
+                            }
+                        } else {
+                            return { error: '只支持一元一次和一元二次方程' };
+                        }
+                    } catch (e) {
+                        return { error: e.message };
+                    }
+                };
+                
+                // 求解线性方程组
+                math.solveLinearSystem = function(A, b) {
+                    try {
+                        // A是系数矩阵，b是常数向量
+                        const A_inv = math.inv(A);
+                        const x = math.multiply(A_inv, b);
+                        return x;
+                    } catch (e) {
+                        return { error: e.message };
+                    }
+                };
+                
+                // 数值积分（辛普森法）
+                math.integrate = function(f, a, b, n = 1000) {
+                    const h = (b - a) / n;
+                    let sum = f(a) + f(b);
+                    
+                    for (let i = 1; i < n; i++) {
+                        const x = a + i * h;
+                        sum += f(x) * (i % 2 === 0 ? 2 : 4);
+                    }
+                    
+                    return sum * h / 3;
+                };
+                
+                // 数值求导
+                math.derivative = function(f, x, h = 1e-5) {
+                    return (f(x + h) - f(x - h)) / (2 * h);
+                };
+                
+                // 极限
+                math.limit = function(f, x, direction = 0) {
+                    const h = 1e-6;
+                    if (direction === 0) {
+                        return (f(x + h) + f(x - h)) / 2;
+                    } else if (direction > 0) {
+                        return f(x + h);
                     } else {
-                        latexOutput = "\\text{无解或无法求解}";
+                        return f(x - h);
+                    }
+                };
+            }
+            
+            // 主求解函数
+            solve(expression, options = {}) {
+                const result = {
+                    input: expression,
+                    type: this.detectProblemType(expression),
+                    solution: null,
+                    steps: [],
+                    error: null
+                };
+                
+                try {
+                    switch(result.type) {
+                        case 'expression':
+                            result.solution = math.evaluate(expression);
+                            result.steps = [`计算: ${expression} = ${result.solution}`];
+                            break;
+                            
+                        case 'equation':
+                            const eqResult = math.solveEquation(expression);
+                            if (eqResult.error) {
+                                result.error = eqResult.error;
+                            } else {
+                                result.solution = eqResult;
+                                result.steps = this.getEquationSteps(expression, eqResult);
+                            }
+                            break;
+                            
+                        case 'derivative':
+                            const func = expression.replace(/^d\/dx\s*\(?|\)$/g, '');
+                            const f = x => math.evaluate(func, { x });
+                            result.solution = math.derivative(f, 0);
+                            result.steps = [
+                                `求导: f(x) = ${func}`,
+                                `f'(x) = ${this.getDerivative(func)}`,
+                                `f'(0) = ${result.solution}`
+                            ];
+                            break;
+                            
+                        case 'integral':
+                            const integralMatch = expression.match(/∫\s*(.+?)\s*d([a-z])/);
+                            if (integralMatch) {
+                                const integrand = integralMatch[1];
+                                const variable = integralMatch[2];
+                                result.solution = this.getIntegral(integrand, variable);
+                                result.steps = [
+                                    `求积分: ∫${integrand} d${variable}`,
+                                    `原函数: ${result.solution}`
+                                ];
+                            }
+                            break;
+                            
+                        case 'limit':
+                            const limitMatch = expression.match(/lim_\{([a-z])→([^}]+)\}\s*(.+)/);
+                            if (limitMatch) {
+                                const variable = limitMatch[1];
+                                const target = parseFloat(limitMatch[2]);
+                                const funcStr = limitMatch[3];
+                                const f = x => math.evaluate(funcStr, { [variable]: x });
+                                result.solution = math.limit(f, target);
+                                result.steps = [
+                                    `求极限: lim(${funcStr}) 当 ${variable} → ${target}`,
+                                    `结果: ${result.solution}`
+                                ];
+                            }
+                            break;
+                            
+                        case 'matrix':
+                            result.solution = this.processMatrix(expression);
+                            break;
+                            
+                        default:
+                            result.error = '无法识别的表达式类型';
+                    }
+                } catch (e) {
+                    result.error = e.message;
+                }
+                
+                return result;
+            }
+            
+            detectProblemType(expr) {
+                if (expr.includes('=')) return 'equation';
+                if (expr.includes('d/dx') || expr.includes('导数')) return 'derivative';
+                if (expr.includes('∫') || expr.includes('积分')) return 'integral';
+                if (expr.includes('lim') || expr.includes('极限')) return 'limit';
+                if (expr.includes('matrix') || expr.includes('det') || expr.includes('特征值')) return 'matrix';
+                if (expr.includes('[') && expr.includes(']')) return 'matrix';
+                return 'expression';
+            }
+            
+            getEquationSteps(equation, result) {
+                const steps = [`方程: ${equation}`];
+                
+                if (result.type === 'linear') {
+                    steps.push('这是一元一次方程');
+                    steps.push(`解: x = ${result.solution}`);
+                } else if (result.type === 'quadratic') {
+                    steps.push('这是一元二次方程');
+                    steps.push(`判别式: Δ = ${result.discriminant}`);
+                    
+                    if (result.discriminant > 0) {
+                        steps.push('Δ > 0，有两个实根');
+                        steps.push(`x₁ = ${result.solutions[0]}`);
+                        steps.push(`x₂ = ${result.solutions[1]}`);
+                    } else if (Math.abs(result.discriminant) < 1e-10) {
+                        steps.push('Δ = 0，有一个重根');
+                        steps.push(`x = ${result.solutions[0]}`);
+                    } else {
+                        steps.push('Δ < 0，有两个共轭复根');
+                        steps.push(`x₁ = ${result.solutions[0].re} + ${result.solutions[0].im}i`);
+                        steps.push(`x₂ = ${result.solutions[1].re} + ${result.solutions[1].im}i`);
                     }
                 }
-
-                outputArea.innerHTML = `$$ ${latexOutput} $$`;
-                MathJax.typesetPromise([outputArea]);
                 
-                // 方程模式下不绘图，显示占位符
-                document.getElementById('plot-placeholder').classList.remove('hidden');
-                document.getElementById('plot').innerHTML = '';
-                document.getElementById('plot-placeholder').innerText = "方程模式暂不支持绘图";
-
-            } catch (e) {
-                console.error(e);
-                outputArea.innerHTML = `<span class="text-red-500">无法求解: 请检查方程格式 (例如: x+y=5)</span>`;
+                return steps;
             }
-        }
-
-        // === 5. 绘图函数 ===
-        function drawGraph(expression) {
-            try {
-                // 清理表达式 (Function Plot 不支持等号，只支持 y = ...)
-                let cleanExpr = expression;
-                if(cleanExpr.includes('=')) {
-                    cleanExpr = cleanExpr.split('=')[1]; // 取等号右边
-                }
-
-                const width = document.getElementById('graph-container').clientWidth;
-                const height = document.getElementById('graph-container').clientHeight || 400;
-
-                functionPlot({
-                    target: '#plot',
-                    width: width,
-                    height: height,
-                    grid: true,
-                    data: [{
-                        fn: cleanExpr,
-                        color: '#4F46E5', // Indigo-600
-                        graphType: 'polyline'
-                    }],
-                    xAxis: {domain: [-10, 10]},
-                    yAxis: {domain: [-10, 10]}
+            
+            getDerivative(expr) {
+                // 简单的符号求导
+                const rules = [
+                    { pattern: /(\d+)([a-z])\^(\d+)/g, derivative: (match, p1, p2, p3) => 
+                        `${p1 * p3}${p2}^${p3-1}` },
+                    { pattern: /(\d+)?([a-z])/g, derivative: (match, p1, p2) => 
+                        p1 ? p1 : '1' },
+                    { pattern: /sin\(([^)]+)\)/g, derivative: (match, p1) => 
+                        `cos(${p1})` },
+                    { pattern: /cos\(([^)]+)\)/g, derivative: (match, p1) => 
+                        `-sin(${p1})` },
+                    { pattern: /tan\(([^)]+)\)/g, derivative: (match, p1) => 
+                        `sec^2(${p1})` },
+                    { pattern: /e\^([a-z])/g, derivative: (match, p1) => 
+                        `e^${p1}` },
+                    { pattern: /ln\(([^)]+)\)/g, derivative: (match, p1) => 
+                        `1/${p1}` }
+                ];
+                
+                let derivative = expr;
+                rules.forEach(rule => {
+                    derivative = derivative.replace(rule.pattern, rule.derivative);
                 });
-            } catch (e) {
-                console.log("绘图失败");
+                
+                return derivative;
+            }
+            
+            getIntegral(expr, variable) {
+                // 简单的符号积分
+                const integralRules = [
+                    { pattern: /(\d+)?([a-z])(?:\^(\d+))?/, integral: (match, p1, p2, p3) => {
+                        const coeff = p1 ? parseFloat(p1) : 1;
+                        const power = p3 ? parseInt(p3) : 1;
+                        return `${coeff/(power+1)}${variable}^${power+1}`;
+                    }},
+                    { pattern: /sin\(([^)]+)\)/, integral: (match, p1) => 
+                        `-cos(${p1})` },
+                    { pattern: /cos\(([^)]+)\)/, integral: (match, p1) => 
+                        `sin(${p1})` },
+                    { pattern: /e\^([a-z])/, integral: (match, p1) => 
+                        `e^${p1}` },
+                    { pattern: /1\/([a-z])/, integral: (match, p1) => 
+                        `ln|${p1}|` }
+                ];
+                
+                let integral = '';
+                integralRules.forEach(rule => {
+                    if (expr.match(rule.pattern)) {
+                        integral = expr.replace(rule.pattern, rule.integral);
+                    }
+                });
+                
+                return integral ? integral + ' + C' : '无法找到原函数';
+            }
+            
+            processMatrix(expr) {
+                try {
+                    if (expr.startsWith('det')) {
+                        const matrixStr = expr.match(/\[(.*?)\]/)[0];
+                        const matrix = math.evaluate(matrixStr);
+                        return math.det(matrix);
+                    } else if (expr.includes('特征值')) {
+                        const matrixStr = expr.match(/\[(.*?)\]/)[0];
+                        const matrix = math.evaluate(matrixStr);
+                        const eig = math.eigs(matrix);
+                        return { eigenvalues: eig.values, eigenvectors: eig.vectors };
+                    } else {
+                        return math.evaluate(expr);
+                    }
+                } catch (e) {
+                    return { error: e.message };
+                }
+            }
+            
+            // 矩阵运算
+            matrixOperation(operation, matrixA, matrixB = null) {
+                try {
+                    const A = math.matrix(matrixA);
+                    let result;
+                    
+                    switch(operation) {
+                        case 'add':
+                            const B = math.matrix(matrixB);
+                            result = math.add(A, B);
+                            break;
+                        case 'multiply':
+                            const C = math.matrix(matrixB);
+                            result = math.multiply(A, C);
+                            break;
+                        case 'inverse':
+                            result = math.inv(A);
+                            break;
+                        case 'transpose':
+                            result = math.transpose(A);
+                            break;
+                        case 'determinant':
+                            result = math.det(A);
+                            break;
+                        case 'eigenvalues':
+                            const eig = math.eigs(A);
+                            result = { eigenvalues: eig.values, eigenvectors: eig.vectors };
+                            break;
+                        default:
+                            return { error: '未知的矩阵运算' };
+                    }
+                    
+                    return { success: true, result };
+                } catch (e) {
+                    return { error: e.message };
+                }
+            }
+            
+            // 统计计算
+            statistics(data, operation) {
+                try {
+                    switch(operation) {
+                        case 'mean':
+                            return math.mean(data);
+                        case 'median':
+                            return math.median(data);
+                        case 'std':
+                            return math.std(data);
+                        case 'variance':
+                            return math.variance(data);
+                        case 'sum':
+                            return math.sum(data);
+                        case 'min':
+                            return math.min(data);
+                        case 'max':
+                            return math.max(data);
+                        default:
+                            return { error: '未知的统计运算' };
+                    }
+                } catch (e) {
+                    return { error: e.message };
+                }
+            }
+            
+            // 生成练习题
+            generatePractice(type, count = 5) {
+                const problems = {
+                    algebra: [
+                        '2x + 5 = 13',
+                        'x^2 - 5x + 6 = 0',
+                        '3(x - 4) = 2x + 5',
+                        '(x + 2)(x - 3) = 0',
+                        'sqrt(x + 3) = 5',
+                        '|2x - 3| = 7',
+                        '1/(x+1) = 2/(x-1)',
+                        'x^3 - 6x^2 + 11x - 6 = 0',
+                        '2^(x) = 8',
+                        'log_2(x) = 3'
+                    ],
+                    calculus: [
+                        'd/dx (x^2 + 3x + 2)',
+                        'd/dx (sin(x) + cos(x))',
+                        '∫(2x + 3) dx',
+                        '∫(sin(x)) dx',
+                        '∫(e^x) dx',
+                        'lim_{x→0} (sin(x)/x)',
+                        'lim_{x→∞} (1 + 1/x)^x',
+                        'd/dx (ln(x))',
+                        '∫(1/x) dx',
+                        'd^2/dx^2 (x^3)'
+                    ],
+                    matrix: [
+                        'det([[1,2],[3,4]])',
+                        '[[1,2],[3,4]] + [[5,6],[7,8]]',
+                        '[[1,2],[3,4]] * [[2,0],[0,2]]',
+                        'inv([[1,2],[3,4]])',
+                        'transpose([[1,2,3],[4,5,6]])',
+                        '特征值([[2,1],[1,2]])',
+                        '[[1,2],[2,4]] * [3,4]',
+                        'det([[1,0,0],[0,2,0],[0,0,3]])',
+                        '[[cos(30),-sin(30)],[sin(30),cos(30)]] * [1,0]',
+                        '[[1,2],[3,4]]^2'
+                    ],
+                    statistics: [
+                        'mean([1,2,3,4,5])',
+                        'median([1,3,5,7,9])',
+                        'std([1,2,3,4,5])',
+                        'variance([1,2,3,4,5])',
+                        'sum([1,2,3,4,5])',
+                        'min([3,1,4,1,5])',
+                        'max([3,1,4,1,5])',
+                        'corr([1,2,3],[4,5,6])',
+                        'cov([1,2,3],[4,5,6])',
+                        'quantile([1,2,3,4,5], 0.5)'
+                    ],
+                    system: [
+                        '2x + 3y = 7',
+                        'x - y = 1',
+                        'x + 2y - z = 1',
+                        '2x - y + z = 3',
+                        'x + y - 2z = 0',
+                        '3x + 2y = 8',
+                        '4x - y = 2',
+                        'x + y + z = 6',
+                        '2x - y + z = 3',
+                        'x + 2y - z = 4',
+                        'x^2 + y^2 = 25',
+                        'x + y = 7',
+                        'e^x + ln(y) = 5',
+                        'x^2 - y = 1',
+                        'sin(x) + cos(y) = 1',
+                        'x + y = 5',
+                        'x - y = 1'
+                    ]
+                };
+                
+                const selected = problems[type] || problems.algebra;
+                return selected.slice(0, count);
             }
         }
-
-        // 初始化
-        window.onload = function() {
-            processCalc(); // 默认跑一次
-        };
+        
+        // UI控制器
+        class UIController {
+            constructor(solver) {
+                this.solver = solver;
+                this.currentCategory = 'basic';
+                this.currentTab = 'text';
+                this.mathInput = document.getElementById('math-input');
+                this.symbolsBasic = document.getElementById('symbols-basic');
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.setupSymbolButtons();
+                this.setupMatrixControls();
+                this.setupSystemControls();
+            }
+            
+            setupEventListeners() {
+                // 分类切换
+                document.querySelectorAll('.category-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        this.currentCategory = item.dataset.category;
+                        document.getElementById('current-category').textContent = 
+                            item.querySelector('i').nextSibling.textContent.trim();
+                        this.updateSymbols();
+                    });
+                });
+                
+                // 标签页切换
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                        btn.classList.add('active');
+                        document.querySelector(`.tab-content[data-tab="${btn.dataset.tab}"]`).classList.add('active');
+                        this.currentTab = btn.dataset.tab;
+                    });
+                });
+                
+                // 主按钮事件
+                document.getElementById('btn-solve').addEventListener('click', () => this.solveProblem());
+                document.getElementById('btn-graph').addEventListener('click', () => this.plotGraph());
+                document.getElementById('btn-steps').addEventListener('click', () => this.showSteps());
+                document.getElementById('btn-clear').addEventListener('click', () => this.clearAll());
+                
+                // 矩阵按钮
+                document.getElementById('btn-resize-a').addEventListener('click', () => this.resizeMatrix('a'));
+                document.getElementById('btn-clear-a').addEventListener('click', () => this.clearMatrix('a'));
+                document.getElementById('btn-resize-b').addEventListener('click', () => this.resizeMatrix('b'));
+                document.getElementById('btn-clear-b').addEventListener('click', () => this.clearMatrix('b'));
+                
+                // 方程组按钮
+                document.getElementById('btn-add-eq').addEventListener('click', () => this.addEquation());
+                document.getElementById('btn-solve-system').addEventListener('click', () => this.solveSystem());
+                
+                // 符号按钮点击事件
+                this.mathInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                        e.preventDefault();
+                        this.solveProblem();
+                    }
+                });
+            }
+            
+            setupSymbolButtons() {
+                const symbols = {
+                    basic: [
+                        '+', '-', '*', '/', '=', '^', '√', '(', ')', '[', ']',
+                        'π', 'e', '∞', '|x|', '%', '!', '≈', '≠', '≤', '≥'
+                    ],
+                    algebra: [
+                        'x', 'y', 'z', 'a', 'b', 'c', 'x²', 'x³', 'xⁿ', '√x',
+                        '∛x', '∑', '∏', 'log', 'ln', '|x|', 'x!', 'C(n,k)',
+                        'x+y', 'x-y', 'x*y', 'x/y', 'x^y'
+                    ],
+                    calculus: [
+                        '∫', 'd/dx', '∂/∂x', 'lim', '→', '∞', 'Δx', 'dx',
+                        'dy/dx', 'd²y/dx²', '∑', '∏', 'f(x)', 'f\'(x)', '∫_a^b',
+                        'lim_{x→a}', '∇', '∂f/∂x', '∂²f/∂x²', 'δ'
+                    ],
+                    matrix: [
+                        'A', 'B', 'C', 'det', 'tr', 'rank', 'I', '0', 'A⁻¹',
+                        'A^T', 'A+B', 'A-B', 'A*B', 'kA', 'A⊗B', 'A⊕B',
+                        'λ', 'v', '特征值', '特征向量', '‖A‖'
+                    ],
+                    statistics: [
+                        'μ', 'σ', 'σ²', '∑x', '∑x²', 'x̄', 'x̃', 'P(A)', 'n!',
+                        'C(n,k)', 'P(n,k)', 'E[X]', 'Var(X)', 'σ_x', 'ρ_xy',
+                        'N(μ,σ²)', '∼', 'P(x)', 'F(x)', 'Q(x)'
+                    ],
+                    trigonometry: [
+                        'sin', 'cos', 'tan', 'cot', 'sec', 'csc',
+                        'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh',
+                        'sin²', 'cos²', 'tan²', '°', 'rad', 'θ',
+                        'sin(θ)', 'cos(θ)', 'tan(θ)'
+                    ],
+                    function: [
+                        'f(x)', 'g(x)', 'h(x)', 'f\'(x)', 'f\'\'(x)', 'F(x)',
+                        'f(g(x))', 'f^{-1}(x)', 'f(x)+g(x)', 'f(x)*g(x)',
+                        'f(x)/g(x)', 'f∘g', 'f(x)=0', 'y=f(x)', 'z=f(x,y)'
+                    ],
+                    system: [
+                        '{', '}', '[', ']', 'x₁', 'x₂', 'x₃', '⋮', '⋯',
+                        '∑_{i=1}^n', '∏_{i=1}^n', '∀', '∃', '∈', '∉',
+                        'ℝ', 'ℂ', 'ℕ', 'ℤ', '⊂'
+                    ]
+                };
+                
+                this.updateSymbols();
+            }
+            
+            updateSymbols() {
+                const symbols = {
+                    basic: ['+', '-', '*', '/', '=', '^', '√', '(', ')', '[', ']', 'π', 'e', '∞', '|x|', '%', '!', '≈', '≠', '≤', '≥', '·', '±', '∓', '≡'],
+                    algebra: ['x', 'y', 'z', 'a', 'b', 'c', 'x²', 'x³', 'xⁿ', '√x', '∛x', '∑', '∏', 'log', 'ln', '|x|', 'x!', 'C(n,k)', 'x+y', 'x-y', 'x*y', 'x/y', 'x^y', '√(x)', 'n√(x)'],
+                    calculus: ['∫', 'd/dx', '∂/∂x', 'lim', '→', '∞', 'Δx', 'dx', 'dy/dx', 'd²y/dx²', '∑', '∏', 'f(x)', 'f\'(x)', '∫_a^b', 'lim_{x→a}', '∇', '∂f/∂x', '∂²f/∂x²', 'δ', 'ε', 'Δy', 'dy'],
+                    matrix: ['A', 'B', 'C', 'det', 'tr', 'rank', 'I', '0', 'A⁻¹', 'A^T', 'A+B', 'A-B', 'A*B', 'kA', 'A⊗B', 'A⊕B', 'λ', 'v', '特征值', '特征向量', '‖A‖', 'det(A)', 'A^{-1}'],
+                    statistics: ['μ', 'σ', 'σ²', '∑x', '∑x²', 'x̄', 'x̃', 'P(A)', 'n!', 'C(n,k)', 'P(n,k)', 'E[X]', 'Var(X)', 'σ_x', 'ρ_xy', 'N(μ,σ²)', '∼', 'P(x)', 'F(x)', 'Q(x)', 'β', 'α', 'χ²'],
+                    trigonometry: ['sin', 'cos', 'tan', 'cot', 'sec', 'csc', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'sin²', 'cos²', 'tan²', '°', 'rad', 'θ', 'sin(θ)', 'cos(θ)', 'tan(θ)', 'sin^{-1}', 'cos^{-1}'],
+                    function: ['f(x)', 'g(x)', 'h(x)', 'f\'(x)', 'f\'\'(x)', 'F(x)', 'f(g(x))', 'f^{-1}(x)', 'f(x)+g(x)', 'f(x)*g(x)', 'f(x)/g(x)', 'f∘g', 'f(x)=0', 'y=f(x)', 'z=f(x,y)', 'f: X→Y', 'dom(f)', 'ran(f)'],
+                    system: ['{', '}', '[', ']', 'x₁', 'x₂', 'x₃', '⋮', '⋯', '∑_{i=1}^n', '∏_{i=1}^n', '∀', '∃', '∈', '∉', 'ℝ', 'ℂ', 'ℕ', 'ℤ', '⊂', '∪', '∩', '∅']
+                };
+                
+                const currentSymbols = symbols[this.currentCategory] || symbols.basic;
+                this.symbolsBasic.innerHTML = '';
+                
+                currentSymbols.forEach(symbol => {
+                    const btn = document.createElement('button');
+                    btn.className = 'symbol-btn';
+                    btn.textContent = symbol;
+                    btn.addEventListener('click', () => {
+                        this.insertSymbol(symbol);
+                    });
+                    this.symbolsBasic.appendChild(btn);
+                });
+            }
+            
+            insertSymbol(symbol) {
+                const input = this.mathInput;
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const text = input.value;
+                
+                // 处理特殊符号
+                let insertText = symbol;
+                switch(symbol) {
+                    case '∫':
+                        insertText = '∫( )dx';
+                        break;
+                    case 'd/dx':
+                        insertText = 'd/dx( )';
+                        break;
+                    case 'lim':
+                        insertText = 'lim_{x→0}( )';
+                        break;
+                    case '∑_{i=1}^n':
+                        insertText = '∑_{i=1}^{n}( )';
+                        break;
+                    case 'f(x)':
+                        insertText = 'f(x) = ';
+                        break;
+                }
+                
+                input.value = text.substring(0, start) + insertText + text.substring(end);
+                input.focus();
+                
+                // 将光标放在括号内
+                if (symbol === '∫' || symbol === 'd/dx' || symbol === 'lim' || symbol === '∑_{i=1}^n') {
+                    const cursorPos = start + insertText.indexOf(' ') + 1;
+                    input.setSelectionRange(cursorPos, cursorPos);
+                } else {
+                    input.setSelectionRange(start + insertText.length, start + insertText.length);
+                }
+            }
+            
+            setupMatrixControls() {
+                // 矩阵大小调整
+                window.resizeMatrix = (matrixId) => {
+                    const rows = parseInt(prompt('请输入行数:', 2));
+                    const cols = parseInt(prompt('请输入列数:', 2));
+                    
+                    if (rows > 0 && cols > 0) {
+                        const container = document.getElementById(`matrix-${matrixId}`);
+                        container.innerHTML = '';
+                        
+                        for (let i = 0; i < rows; i++) {
+                            const rowDiv = document.createElement('div');
+                            rowDiv.className = 'matrix-row';
+                            
+                            for (let j = 0; j < cols; j++) {
+                                const input = document.createElement('input');
+                                input.type = 'text';
+                                input.className = 'matrix-cell';
+                                input.value = i === j ? '1' : '0';
+                                rowDiv.appendChild(input);
+                            }
+                            
+                            container.appendChild(rowDiv);
+                        }
+                    }
+                };
+                
+                // 矩阵清空
+                window.clearMatrix = (matrixId) => {
+                    const cells = document.querySelectorAll(`#matrix-${matrixId} .matrix-cell`);
+                    cells.forEach(cell => cell.value = '0');
+                };
+            }
+            
+            setupSystemControls() {
+                // 添加方程
+                window.addEquation = () => {
+                    const container = document.getElementById('system-input');
+                    const eqDiv = document.createElement('div');
+                    eqDiv.className = 'equation-row';
+                    eqDiv.innerHTML = `
+                        <input type="text" class="equation-input" placeholder="左边表达式">
+                        <span class="equals">=</span>
+                        <input type="text" class="equation-input" placeholder="右边表达式">
+                        <button class="btn btn-danger btn-remove-eq"><i class="fas fa-times"></i></button>
+                    `;
+                    
+                    eqDiv.querySelector('.btn-remove-eq').addEventListener('click', function() {
+                        eqDiv.remove();
+                    });
+                    
+                    container.appendChild(eqDiv);
+                };
+                
+                // 移除方程按钮事件委托
+                document.getElementById('system-input').addEventListener('click', (e) => {
+                    if (e.target.closest('.btn-remove-eq')) {
+                        e.target.closest('.equation-row').remove();
+                    }
+                });
+            }
+            
+            getMatrixValues(matrixId) {
+                const rows = [];
+                const rowDivs = document.querySelectorAll(`#matrix-${matrixId} .matrix-row`);
+                
+                rowDivs.forEach(rowDiv => {
+                    const row = [];
+                    const cells = rowDiv.querySelectorAll('.matrix-cell');
+                    cells.forEach(cell => {
+                        const val = parseFloat(cell.value) || 0;
+                        row.push(val);
+                    });
+                    rows.push(row);
+                });
+                
+                return rows;
+            }
+            
+            solveSystem() {
+                const equations = [];
+                const equationRows = document.querySelectorAll('#system-input .equation-row');
+                
+                equationRows.forEach(row => {
+                    const inputs = row.querySelectorAll('.equation-input');
+                    if (inputs.length === 2) {
+                        const left = inputs[0].value.trim();
+                        const right = inputs[1].value.trim();
+                        if (left && right) {
+                            equations.push(`${left} = ${right}`);
+                        }
+                    }
+                });
+                
+                if (equations.length === 0) {
+                    alert('请输入方程组！');
+                    return;
+                }
+                
+                // 解析方程组
+                const systemResult = this.parseAndSolveSystem(equations);
+                this.displaySystemResult(systemResult);
+            }
+            
+            parseAndSolveSystem(equations) {
+                // 简化的线性方程组求解
+                // 实际应用中需要更复杂的解析
+                try {
+                    if (equations.length === 2) {
+                        // 尝试解析两个方程
+                        const eq1 = equations[0];
+                        const eq2 = equations[1];
+                        
+                        // 提取系数（简化版，实际需要更复杂的解析）
+                        const coeffs = this.extractCoefficients([eq1, eq2]);
+                        
+                        if (coeffs) {
+                            const A = coeffs.A;
+                            const b = coeffs.b;
+                            
+                            try {
+                                const solution = math.lusolve(A, b);
+                                return {
+                                    type: 'linear',
+                                    solution: solution,
+                                    equations: equations,
+                                    matrixA: A,
+                                    vectorB: b
+                                };
+                            } catch (e) {
+                                return { error: '无法求解方程组: ' + e.message };
+                            }
+                        }
+                    }
+                    
+                    return { 
+                        equations: equations,
+                        message: '方程组解析完成，需要更复杂的求解器处理非线性系统'
+                    };
+                } catch (e) {
+                    return { error: e.message };
+                }
+            }
+            
+            extractCoefficients(equations) {
+                // 简化的系数提取（仅处理形如 ax + by = c 的方程）
+                const vars = ['x', 'y', 'z'];
+                const A = [];
+                const b = [];
+                
+                equations.forEach(eq => {
+                    const [left, right] = eq.split('=');
+                    const coeffs = vars.map(v => {
+                        const regex = new RegExp(`([+-]?\\s*\\d*\\.?\\d*)\\s*\\*?\\s*${v}(?!\\w)`);
+                        const match = left.match(regex);
+                        if (match) {
+                            let coeff = match[1].replace(/\s+/g, '');
+                            if (coeff === '' || coeff === '+') coeff = '1';
+                            if (coeff === '-') coeff = '-1';
+                            return parseFloat(coeff) || 0;
+                        }
+                        return 0;
+                    });
+                    
+                    A.push(coeffs);
+                    b.push([parseFloat(right) || 0]);
+                });
+                
+                return { A, b };
+            }
+            
+            displaySystemResult(result) {
+                const output = document.getElementById('result-output');
+                
+                if (result.error) {
+                    output.innerHTML = `<div class="error">错误: ${result.error}</div>`;
+                    return;
+                }
+                
+                let html = '<div class="system-solution">';
+                html += `<h4>方程组:</h4><ul>`;
+                
+                result.equations.forEach(eq => {
+                    html += `<li>${eq}</li>`;
+                });
+                
+                html += '</ul>';
+                
+                if (result.type === 'linear' && result.solution) {
+                    html += `<h4>解:</h4>`;
+                    const vars = ['x', 'y', 'z'];
+                    
+                    result.solution._data.forEach((value, index) => {
+                        html += `<p>${vars[index] || `x${index+1}`} = ${value}</p>`;
+                    });
+                    
+                    html += `<h4>系数矩阵 A:</h4><pre>${JSON.stringify(result.matrixA, null, 2)}</pre>`;
+                    html += `<h4>常数向量 b:</h4><pre>${JSON.stringify(result.vectorB, null, 2)}</pre>`;
+                } else {
+                    html += `<p>${result.message}</p>`;
+                }
+                
+                html += '</div>';
+                output.innerHTML = html;
+            }
+            
+            solveProblem() {
+                const input = this.mathInput.value.trim();
+                
+                if (!input) {
+                    alert('请输入数学表达式！');
+                    return;
+                }
+                
+                const result = this.solver.solve(input);
+                this.displayResult(result);
+                
+                // 生成相关练习题
+                this.generatePracticeProblems();
+            }
+            
+            displayResult(result) {
+                const output = document.getElementById('result-output');
+                const stepsOutput = document.getElementById('steps-output');
+                
+                if (result.error) {
+                    output.innerHTML = `<div class="error" style="color: #dc3545; padding: 10px; background: #f8d7da; border-radius: 5px;">
+                        <strong>错误:</strong> ${result.error}
+                    </div>`;
+                    stepsOutput.innerHTML = `<li class="step-item">计算过程中发生错误</li>`;
+                    return;
+                }
+                
+                // 显示结果
+                let resultHtml = `<h4>输入: ${result.input}</h4>`;
+                
+                if (result.type === 'equation' && result.solution) {
+                    if (result.solution.type === 'linear') {
+                        resultHtml += `<p>方程类型: 一元一次方程</p>`;
+                        resultHtml += `<p>解: x = ${result.solution.solution.toFixed(4)}</p>`;
+                    } else if (result.solution.type === 'quadratic') {
+                        resultHtml += `<p>方程类型: 一元二次方程</p>`;
+                        resultHtml += `<p>判别式: Δ = ${result.solution.discriminant.toFixed(4)}</p>`;
+                        
+                        if (result.solution.discriminant > 0) {
+                            resultHtml += `<p>有两个不同的实根:</p>`;
+                            resultHtml += `<p>x₁ = ${result.solution.solutions[0].toFixed(4)}</p>`;
+                            resultHtml += `<p>x₂ = ${result.solution.solutions[1].toFixed(4)}</p>`;
+                        } else if (Math.abs(result.solution.discriminant) < 1e-10) {
+                            resultHtml += `<p>有一个重根:</p>`;
+                            resultHtml += `<p>x = ${result.solution.solutions[0].toFixed(4)}</p>`;
+                        } else {
+                            resultHtml += `<p>有两个共轭复根:</p>`;
+                            resultHtml += `<p>x₁ = ${result.solution.solutions[0].re.toFixed(4)} + ${result.solution.solutions[0].im.toFixed(4)}i</p>`;
+                            resultHtml += `<p>x₂ = ${result.solution.solutions[1].re.toFixed(4)} + ${result.solution.solutions[1].im.toFixed(4)}i</p>`;
+                        }
+                    }
+                } else if (typeof result.solution === 'number') {
+                    resultHtml += `<p>结果: ${result.solution}</p>`;
+                } else if (result.solution !== null) {
+                    resultHtml += `<p>结果: ${JSON.stringify(result.solution, null, 2)}</p>`;
+                }
+                
+                output.innerHTML = resultHtml;
+                
+                // 显示步骤
+                if (result.steps && result.steps.length > 0) {
+                    stepsOutput.innerHTML = '';
+                    result.steps.forEach((step, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'step-item';
+                        li.textContent = `步骤 ${index + 1}: ${step}`;
+                        stepsOutput.appendChild(li);
+                    });
+                }
+            }
+            
+            generatePracticeProblems() {
+                const practiceOutput = document.getElementById('practice-output');
+                const currentType = this.currentCategory;
+                const problems = this.solver.generatePractice(currentType, 3);
+                
+                practiceOutput.innerHTML = '';
+                problems.forEach((problem, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'practice-item';
+                    li.textContent = problem;
+                    li.style.cursor = 'pointer';
+                    li.addEventListener('click', () => {
+                        this.mathInput.value = problem;
+                        this.solveProblem();
+                    });
+                    practiceOutput.appendChild(li);
+                });
+            }
+            
+            plotGraph() {
+                const input = this.mathInput.value.trim();
+                if (!input) {
+                    alert('请输入函数表达式！');
+                    return;
+                }
+                
+                try {
+                    // 尝试绘制函数图形
+                    const f = x => math.evaluate(input, { x });
+                    const points = [];
+                    
+                    for (let x = -10; x <= 10; x += 0.1) {
+                        try {
+                            const y = f(x);
+                            if (Math.abs(y) < 100) { // 限制y轴范围
+                                points.push({x, y});
+                            }
+                        } catch (e) {
+                            // 跳过无效点
+                        }
+                    }
+                    
+                    this.plotFunction(points, input);
+                } catch (e) {
+                    alert('无法绘制函数图形: ' + e.message);
+                }
+            }
+            
+            plotFunction(points, expression) {
+                const ctx = document.getElementById('graph-canvas').getContext('2d');
+                
+                // 清除之前的图形
+                if (window.myChart) {
+                    window.myChart.destroy();
+                }
+                
+                if (points.length === 0) {
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    ctx.fillText('无有效数据点', 10, 20);
+                    return;
+                }
+                
+                const data = {
+                    datasets: [{
+                        label: `f(x) = ${expression}`,
+                        data: points,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1
+                    }]
+                };
+                
+                const config = {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `函数图像: ${expression}`
+                            },
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'x'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'f(x)'
+                                }
+                            }
+                        }
+                    }
+                };
+                
+                window.myChart = new Chart(ctx, config);
+            }
+            
+            showSteps() {
+                const input = this.mathInput.value.trim();
+                if (!input) {
+                    alert('请输入数学表达式！');
+                    return;
+                }
+                
+                this.solveProblem();
+            }
+            
+            clearAll() {
+                this.mathInput.value = '';
+                document.getElementById('result-output').innerHTML = '等待计算...';
+                document.getElementById('steps-output').innerHTML = '<li class="step-item">输入表达式后点击"计算求解"查看步骤</li>';
+                
+                if (window.myChart) {
+                    window.myChart.destroy();
+                }
+            }
+            
+            loadExamples() {
+                const examples = [
+                    '2x + 5 = 13',
+                    'x^2 - 4x + 4 = 0',
+                    'sin(x) + cos(x)',
+                    '∫(2x + 3) dx',
+                    'd/dx (x^2 + 3x)',
+                    'det([[1,2],[3,4]])',
+                    'mean([1,2,3,4,5])'
+                ];
+                
+                this.mathInput.placeholder = `例如: ${examples.join(', ')}`;
+            }
+        }
+        
+        // 图形绘制器
+        class GraphPlotter {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.chart = null;
+            }
+            
+            plot(f, xMin = -10, xMax = 10, step = 0.1) {
+                const points = [];
+                
+                for (let x = xMin; x <= xMax; x += step) {
+                    try {
+                        const y = f(x);
+                        if (!isNaN(y) && isFinite(y)) {
+                            points.push({x, y});
+                        }
+                    } catch (e) {
+                        // 跳过无效点
+                    }
+                }
+                
+                this.draw(points);
+            }
+            
+            draw(points) {
+                if (this.chart) {
+                    this.chart.destroy();
+                }
+                
+                const data = {
+                    datasets: [{
+                        label: '函数图像',
+                        data: points,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    }]
+                };
+                
+                const config = {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom'
+                            },
+                            y: {
+                                type: 'linear'
+                            }
+                        }
+                    }
+                };
+                
+                this.chart = new Chart(this.ctx, config);
+            }
+        }
     </script>
 </body>
 </html>
