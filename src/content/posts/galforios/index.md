@@ -111,6 +111,10 @@ licenseName: "Unlicensed"
 
 #### 注意：
 1. iOS 版 Artroid 仅更新至 ver2.0，而安卓版已更新至 ver3.0，故 iOS 版无法运行含 emote 的游戏
+
+<a href="/posts/artemiszz/">直装教程</a>
+
+
 2. 部分游戏需使用补丁
 3. 在资源网站中带有 “tyranor”“ty”“Artemis” 标签的资源大部分可在 Artroid+ 中运行
 
