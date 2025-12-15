@@ -1,287 +1,218 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B站字幕提取与转换工具</title>
+    <title>Bilibili字幕处理工具</title>
     <style>
         body {
-            font-family: "Microsoft YaHei", sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        h1 { color: #00aeec; margin-bottom: 20px; }
-        
-        /* 主容器 */
-        .container {
-            background: white;
-            width: 100%;
+            font-family: Arial, sans-serif;
             max-width: 800px;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f0f0f0;
         }
 
-        /* 按钮样式 */
-        .btn {
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        button {
             padding: 10px 20px;
+            margin: 5px;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-            font-size: 14px;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            text-decoration: none;
-        }
-        .btn-primary { background-color: #00aeec; color: white; }
-        .btn-primary:hover { background-color: #008acb; }
-        .btn-success { background-color: #4CAF50; color: white; }
-        .btn-success:hover { background-color: #45a049; }
-        .btn-outline { background-color: white; border: 1px solid #ccc; color: #333; }
-        .btn-outline:hover { background-color: #f5f5f5; }
-
-        /* 顶部控制栏 */
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px dashed #ccc;
         }
 
-        textarea {
-            width: 100%;
-            height: 300px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            resize: vertical;
-            box-sizing: border-box;
-            font-family: Consolas, monospace;
-            font-size: 14px;
-        }
-
-        /* --- 弹窗 (Modal) 样式 --- */
-        .modal-overlay {
-            display: none; /* 默认隐藏 */
+        #exampleModal {
+            display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 700px;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            position: relative;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-        .modal-title { font-size: 18px; font-weight: bold; color: #333; }
-        .close-btn { font-size: 24px; cursor: pointer; color: #999; }
-        .close-btn:hover { color: #333; }
-        
-        .modal-body textarea {
-            height: 200px;
-            background-color: #f4f4f4;
-            color: #555;
-            margin-bottom: 15px;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
         }
 
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 10px;
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            min-height: 300px;
+            overflow-y: auto;
         }
-        
-        .info-tag {
-            background: #e3f2fd;
-            color: #0277bd;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-bottom: 10px;
-            display: inline-block;
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-
 <div class="container">
-    <h1>B站字幕提取器</h1>
+    <h2>Bilibili字幕处理工具</h2>
     
-    <div class="controls">
+    <!-- 文件上传区域 -->
+    <div>
+        <input type="file" id="jsonUpload" accept=".json">
+        <p>支持上传JSON格式字幕文件</p>
+    </div>
+
+    <!-- 显示区域 -->
+    <div>
+        <textarea id="subtitleDisplay" readonly style="width:100%; height:200px; padding:10px;"></textarea>
         <div>
-            <input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleFileUpload(this)">
-            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-                📂 上传 JSON 文件
-            </button>
-            <span id="fileName" style="margin-left:10px; font-size:12px; color:#666;"></span>
+            <input type="checkbox" id="lineBreak"> 
+            <label for="lineBreak">每行独立显示</label>
         </div>
-
-        <button class="btn btn-outline" onclick="openModal()">
-            💡 查看示例 / 下载转换
-        </button>
     </div>
 
-    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
-        <label style="cursor: pointer; display: flex; align-items: center;">
-            <input type="checkbox" id="newlineToggle" checked onchange="reRender()"> 
-            <span style="margin-left: 5px;">保留换行</span>
-        </label>
-        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;" onclick="copyMainText()">复制内容</button>
+    <!-- 示例按钮 -->
+    <button onclick="showExample()">查看示例JSON</button>
+
+    <!-- 下载按钮 -->
+    <div>
+        <button onclick="downloadTxt()">下载TXT</button>
+        <button onclick="downloadSubtitle()">下载字幕</button>
     </div>
-    <textarea id="mainOutput" placeholder="上传文件后，提取的内容显示在这里..."></textarea>
+
+    <!-- Bilibili链接输入 -->
+    <div>
+        <input type="text" id="bilibiliUrl" placeholder="输入Bilibili视频链接">
+        <button onclick="getBilibiliSubtitle()">获取字幕</button>
+    </div>
 </div>
 
-<div id="exampleModal" class="modal-overlay">
+<!-- 示例模态框 -->
+<div id="exampleModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <span class="modal-title">示例数据：猫娘期是男孩子的正常生理现象</span>
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-        </div>
-        
-        <div class="modal-body">
-            <div class="info-tag">JSON 源文件预览 (只读)</div>
-            <textarea id="modalJsonArea" readonly></textarea>
-            
-            <div class="modal-actions">
-                <button class="btn btn-outline" onclick="loadExampleToMain()">
-                    ↖ 填入主界面
-                </button>
-                <button class="btn btn-success" onclick="downloadExample('txt')">
-                    📄 下载 .TXT (纯文本)
-                </button>
-                <button class="btn btn-success" onclick="downloadExample('srt')">
-                    🎬 下载 .SRT (带时间轴字幕)
-                </button>
-            </div>
-        </div>
+        <span class="close" onclick="closeExample()">&times;</span>
+        <pre id="exampleContent">
+{
+  "body": [
+    {"from":0,"to":2,"content":"欢迎来到"},
+    {"from":2,"to":4,"content":"示例字幕"}
+  ]
+}
+        </pre>
     </div>
 </div>
 
 <script>
-    // 示例 JSON 数据
-    const exampleData = {
-      "body": [
-        { "from": 0.08, "to": 4.18, "sid": 1, "content": "我们知道有很多男孩子在一觉醒来之后" },
-        { "from": 4.18, "to": 6.32, "sid": 2, "content": "变成了可爱的猫娘喵" },
-        { "from": 6.32, "to": 8.3, "sid": 3, "content": "届时请不要惊慌" },
-        { "from": 8.3, "to": 12.04, "sid": 4, "content": "猫娘七是男孩子的一种正常的生理现象" },
-        { "from": 12.04, "to": 15.2, "sid": 5, "content": "苗以下是猫娘七的现象名" },
-        { "from": 15.2, "to": 17.959, "sid": 6, "content": "第一与普通的猫猫不同" },
-        { "from": 17.959, "to": 21.079, "sid": 7, "content": "猫娘的尾巴并非是脊柱的延伸" },
-        { "from": 21.079, "to": 23.85, "sid": 8, "content": "而是从屁屁里面长出来的喵" },
-        { "from": 23.85, "to": 27.45, "sid": 9, "content": "因此毛囊期的男孩子是拉布了大便的" },
-        { "from": 27.45, "to": 30.67, "sid": 10, "content": "描美少女是不需要拉大便的苗" },
-        { "from": 30.67, "to": 33.41, "sid": 11, "content": "第二说话结尾会带喵" },
-        { "from": 33.41, "to": 35.33, "sid": 12, "content": "这个大家都知道的苗" },
-        { "from": 35.33, "to": 37.59, "sid": 13, "content": "第三猫尾巴是敏感" },
-        { "from": 37.59, "to": 38.37, "sid": 14, "content": "不为喵" },
-        { "from": 38.37, "to": 40.95, "sid": 15, "content": "请不要让陌生人随意碰喵" },
-        { "from": 40.95, "to": 43.51, "sid": 16, "content": "万一在公众场合那样了" },
-        { "from": 43.51, "to": 46.03, "sid": 17, "content": "会被当成H的坏孩子喵" },
-        { "from": 46.03, "to": 49.09, "sid": 18, "content": "第四猫娘要怎么变回人类呢" },
-        { "from": 49.09, "to": 53.18, "sid": 19, "content": "方法就是要和其他没变成猫娘的男孩子" },
-        { "from": 53.18, "to": 54.86, "sid": 20, "content": "达成契约关系苗" },
-        { "from": 54.86, "to": 56.92, "sid": 21, "content": "至于要怎样达成" },
-        { "from": 56.92, "to": 60.16, "sid": 22, "content": "就是要做你心里想的那种事情苗" },
-        { "from": 60.16, "to": 64.32, "sid": 23, "content": "所以今天有哪位男孩子变成了可爱的猫娘" },
-        { "from": 64.32, "to": 66.98, "sid": 24, "content": "喵快点和我达成契约关系" },
-        { "from": 66.98, "to": 70.08, "sid": 25, "content": "喵我这是关心你重新变回人类" },
-        { "from": 70.08, "to": 72.22, "sid": 26, "content": "才不是想着什么H的事情" },
-        { "from": 72.22, "to": 72.74, "sid": 27, "content": "喵" }
-      ]
-    };
-
-    let currentDataBody = []; // 当前主界面正在使用的数据
-
-    // --- 弹窗相关逻辑 ---
-    const modal = document.getElementById('exampleModal');
-    const modalJsonArea = document.getElementById('modalJsonArea');
-
-    function openModal() {
-        modalJsonArea.value = JSON.stringify(exampleData, null, 2);
-        modal.style.display = 'flex';
+// 显示示例JSON
+function showExample() {
+    const modal = document.getElementById("exampleModal");
+    const span = document.getElementsByClassName("close")[0];
+    modal.style.display = "block";
+    
+    span.onclick = function() {
+        modal.style.display = "none";
     }
-
-    function closeModal() {
-        modal.style.display = 'none';
-    }
-
-    // 点击弹窗外部关闭
+    
     window.onclick = function(event) {
         if (event.target == modal) {
-            closeModal();
+            modal.style.display = "none";
         }
     }
+}
 
-    // 将示例载入主界面
-    function loadExampleToMain() {
-        currentDataBody = exampleData.body;
-        reRender();
-        document.getElementById('fileName').innerText = "示例：猫娘.json";
-        closeModal();
-    }
+// 关闭示例模态框
+function closeExample() {
+    document.getElementById("exampleModal").style.display = "none";
+}
 
-    // 下载示例（转换逻辑）
-    function downloadExample(type) {
-        let content = "";
-        let filename = "example";
-        let mimeType = "text/plain";
-
-        if (type === 'txt') {
-            // 提取纯文本
-            content = exampleData.body.map(item => item.content).join('\n');
-            filename = "cat_girl_subtitle.txt";
-        } else if (type === 'srt') {
-            // 转换为 SRT
-            content = convertToSRT(exampleData.body);
-            filename = "cat_girl_subtitle.srt";
-        }
-
-        downloadFile(content, filename, mimeType);
-    }
-
-    // --- 主界面逻辑 ---
+// 处理文件上传
+document.getElementById('jsonUpload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
     
-    function handleFileUpload(input) {
-        const file = input.files[0];
-        if (!file) return;
+    reader.onload = function(e) {
+        try {
+            const json = JSON.parse(e.target.result);
+            displaySubtitles(json.body);
+        } catch(err) {
+            alert('无效的JSON文件');
+        }
+    };
+    
+    reader.readAsText(file);
+});
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const json = JSON.parse(e.target.result);
-                if (json.body) {
-                    currentDataBody = json.body;
-                    document.getElementById('fileName').innerText = file.name;
-                    reRender();
-                }
+// 显示字幕内容
+function displaySubtitles(subtitles) {
+    let content = '';
+    subtitles.forEach(sub => {
+        content += sub.content;
+        if (document.getElementById('lineBreak').checked) {
+            content += '\n';
+        } else {
+            content += ' ';
+        }
+    });
+    document.getElementById('subtitleDisplay').value = content;
+}
+
+// 下载TXT文件
+function downloadTxt() {
+    const content = document.getElementById('subtitleDisplay').value;
+    const blob = new Blob([content], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, "subtitles.txt");
+}
+
+// 下载字幕文件（需配合后端实现）
+function downloadSubtitle() {
+    alert('此功能需要后端支持，请联系开发者获取完整版');
+}
+
+// 获取Bilibili字幕（演示版本）
+function getBilibiliSubtitle() {
+    const url = document.getElementById('bilibiliUrl').value;
+    const bvid = url.split('BV')[1];
+    
+    // 模拟API请求（实际使用时需要后端代理）
+    fetch(`https://api.bilibili.com/x/player/pagelist?bvid=${bvid}`)
+        .then(response => response.json())
+        .then(data => {
+            const cid = data.data[0].cid;
+            alert(`获取到cid: ${cid}\n请使用专用工具下载字幕`);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// 文件保存辅助函数
+function saveAs(blob, filename) {
+    if (window.navigator.msSaveOrOpenBlob) {
+        navigator.msSaveBlob(blob, filename);
+    } else {
+        const link = document.createElement("a");
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+}
+</script>
+</body>
+</html>
