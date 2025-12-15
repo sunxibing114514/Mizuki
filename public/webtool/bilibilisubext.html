@@ -2,14 +2,17 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bilibili字幕处理工具</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
+            margin: 0;
             padding: 20px;
             background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
@@ -17,51 +20,72 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        input, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 400px;
         }
 
         button {
-            padding: 10px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            background-color: #3498db;
+            color: white;
             cursor: pointer;
         }
 
-        #exampleModal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        textarea {
             width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            min-height: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
         }
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            min-height: 300px;
-            overflow-y: auto;
+        .checkbox-container {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
+        /* 响应式设计 */
+        @media (max-width: 600px) {
+            input, button {
+                font-size: 14px;
+                padding: 8px;
+            }
 
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
+            h2 {
+                font-size: 18px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -70,15 +94,15 @@
     <h2>Bilibili字幕处理工具</h2>
     
     <!-- 文件上传区域 -->
-    <div>
+    <div class="input-group">
         <input type="file" id="jsonUpload" accept=".json">
         <p>支持上传JSON格式字幕文件</p>
     </div>
 
     <!-- 显示区域 -->
     <div>
-        <textarea id="subtitleDisplay" readonly style="width:100%; height:200px; padding:10px;"></textarea>
-        <div>
+        <textarea id="subtitleDisplay" readonly placeholder="字幕内容将显示在这里"></textarea>
+        <div class="checkbox-container">
             <input type="checkbox" id="lineBreak"> 
             <label for="lineBreak">每行独立显示</label>
         </div>
@@ -87,16 +111,16 @@
     <!-- 示例按钮 -->
     <button onclick="showExample()">查看示例JSON</button>
 
-    <!-- 下载按钮 -->
-    <div>
+    <!-- 功能按钮 -->
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
         <button onclick="downloadTxt()">下载TXT</button>
-        <button onclick="downloadSubtitle()">下载字幕</button>
+        <button onclick="downloadSrt()">下载SRT</button>
+        <button onclick="getBilibiliSubtitle()">获取B站字幕</button>
     </div>
 
     <!-- Bilibili链接输入 -->
-    <div>
+    <div style="margin-top: 20px;">
         <input type="text" id="bilibiliUrl" placeholder="输入Bilibili视频链接">
-        <button onclick="getBilibiliSubtitle()">获取字幕</button>
     </div>
 </div>
 
@@ -116,6 +140,9 @@
 </div>
 
 <script>
+// 响应式设计变量
+const isMobile = window.innerWidth <= 600;
+
 // 显示示例JSON
 function showExample() {
     const modal = document.getElementById("exampleModal");
@@ -176,12 +203,47 @@ function downloadTxt() {
     saveAs(blob, "subtitles.txt");
 }
 
-// 下载字幕文件（需配合后端实现）
-function downloadSubtitle() {
-    alert('此功能需要后端支持，请联系开发者获取完整版');
+// 生成SRT内容
+function generateSrt(subtitles) {
+    let srt = '';
+    subtitles.forEach((sub, index) => {
+        const start = convertTime(sub.from);
+        const end = convertTime(sub.to);
+        srt += `${index + 1}\n${start} --> ${end}\n${sub.content}\n\n`;
+    });
+    return srt;
 }
 
-// 获取Bilibili字幕（演示版本）
+// 时间格式转换（秒 → SRT格式）
+function convertTime(seconds) {
+    const date = new Date(seconds * 1000);
+    const h = date.getUTCHours().toString().padStart(2, '0');
+    const m = date.getUTCMinutes().toString().padStart(2, '0');
+    const s = date.getUTCSeconds().toString().padStart(2, '0');
+    const ms = date.getUTCMilliseconds().toString().padStart(3, '0');
+    return `${h}:${m}:${s},${ms}`;
+}
+
+// 下载SRT文件
+function downloadSrt() {
+    const subtitles = extractSubtitles();
+    if (subtitles.length === 0) {
+        alert('没有可用的字幕内容');
+        return;
+    }
+    
+    const srtContent = generateSrt(subtitles);
+    const blob = new Blob([srtContent], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, "subtitles.srt");
+}
+
+// 提取字幕数据
+function extractSubtitles() {
+    const displayValue = document.getElementById('subtitleDisplay').value;
+    return displayValue.split('\n').filter(line => line.trim() !== '');
+}
+
+// 下载Bilibili字幕（演示版本）
 function getBilibiliSubtitle() {
     const url = document.getElementById('bilibiliUrl').value;
     const bvid = url.split('BV')[1];
@@ -213,6 +275,24 @@ function saveAs(blob, filename) {
         }
     }
 }
+
+// 初始化界面
+function init() {
+    // 根据屏幕尺寸调整布局
+    const container = document.querySelector('.container');
+    if (isMobile) {
+        container.style.padding = '10px';
+    } else {
+        container.style.padding = '20px';
+    }
+}
+
+// 页面加载时初始化
+window.addEventListener('load', init);
+window.addEventListener('resize', () => {
+    isMobile = window.innerWidth <= 600;
+    init();
+});
 </script>
 </body>
 </html>
