@@ -15,12 +15,11 @@ draft: false
 
 ## 汉化信息
 - **游戏名**：赤い魔女
-- **作者**：catsket
+- **作者**：Platonic F.F
 - **汉化**：超炳
 - **校对/手机测试**：超炳、你
 - **校对/手机测试**：你
-- **原版游戏**：[catsket.itch.io/1016](https://catsket.itch.io/1016)
-- **VNDB**：[vndb.org/v42395](https://vndb.org/v42395)
+- **VNDB**：[vndb.org](https://vndb.org/r17377)
 - **汉化主页**：xibing.dpdns.org
 
 ## 字数统计
@@ -28,7 +27,8 @@ draft: false
 - **中文字数**：无统计
 
 ## 下载链接
-- **GitHub**：[下载地址](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/1016%E6%B1%89%E5%8C%96/1016-1.1-win-complete.zip)
+- **GitHub**：[补丁](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E8%B5%A4%E3%81%84%E9%AD%94%E5%A5%B3%E6%B1%89%E5%8C%96/patch.xp3)
+- **GitHub**：[补丁](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E8%B5%A4%E3%81%84%E9%AD%94%E5%A5%B3%E6%B1%89%E5%8C%96/redwitch.zip)
 - **123云盘**：[下载地址](https://www.123684.com/s/FrLAjv-UpsX)
 - **百度云盘**:  链接:https://pan.baidu.com/s/1SQ3YdhzlgUAbfEBIXnCUAA 提取码:4u81
 - **TG**：[下载地址]()
