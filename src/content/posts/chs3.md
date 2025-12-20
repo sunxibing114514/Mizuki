@@ -36,6 +36,7 @@ draft: false
 - **GitHub**：[下载地址](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/1016%E6%B1%89%E5%8C%96/1016-1.1-win-complete.zip)
 - **123云盘**：[下载地址](https://www.123684.com/s/FrLAjv-4psX)
 - **百度云盘**: 链接:https://pan.baidu.com/s/1__8gvS8mMIFU6YV5E2nC2A 提取码:43wd
+- **TG**：[下载地址](https://t.me/chaobingblog/9)
 
 ## 后记
 我的第二个汉化完成了。虽然文本体量非常小，但由于本人时间有限，拖拖拉拉了一段时间才完成。
