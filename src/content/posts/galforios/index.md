@@ -116,6 +116,30 @@ licenseName: "Unlicensed"
 
 
 2. 部分游戏需使用补丁
+
+补丁格式
+
+```
+[IOS]
+WIDTH = 横向分辨率
+HEIGHT = 纵向分辨率
+CHARSET = UTF-8
+SIDECUT = 0
+BOOT = system/first.iet
+game.os = "windows"
+```
+
+例如
+```
+[IOS]
+WIDTH = 1920
+HEIGHT = 1080
+SIDECUT = 0
+BOOT = system/first.iet
+game.os = "windows"
+CHARSET = UTF-8
+```
+
 3. 在资源网站中带有 “tyranor”“ty”“Artemis” 标签的资源大部分可在 Artroid+ 中运行
 
 #### 使用方法：
