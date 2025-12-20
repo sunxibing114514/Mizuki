@@ -31,7 +31,7 @@ draft: false
 - **GitHub**：[补丁](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E8%B5%A4%E3%81%84%E9%AD%94%E5%A5%B3%E6%B1%89%E5%8C%96/redwitch.zip)
 - **123云盘**：[下载地址](https://www.123684.com/s/FrLAjv-UpsX)
 - **百度云盘**:  链接:https://pan.baidu.com/s/1SQ3YdhzlgUAbfEBIXnCUAA 提取码:4u81
-- **TG**：[下载地址]()
+- **TG**：[下载地址](https://t.me/chaobingblog/10)
 
 ## 后记
 我的第三个汉化完成了。虽然文本体量非常小，一天不到就好了，也是我的第一个kirikiri引擎的汉化
