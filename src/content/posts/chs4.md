@@ -32,8 +32,14 @@ draft: false
 1. 下载补丁和游戏本体
 2. 解压
 3. 将patch.xp3移动到游戏目录
+
+
 4.1 电脑端运行exe
+
+
 4.2 手机端kirikiri/xp3player点击data.xp3
+
+
 
 ## 下载链接
 - **GitHub**：[补丁](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E8%B5%A4%E3%81%84%E9%AD%94%E5%A5%B3%E6%B1%89%E5%8C%96/patch.xp3)
