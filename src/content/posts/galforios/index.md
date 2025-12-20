@@ -119,7 +119,7 @@ licenseName: "Unlicensed"
 
 补丁格式
 
-```
+```system.ini
 [IOS]
 WIDTH = 横向分辨率
 HEIGHT = 纵向分辨率
@@ -130,7 +130,7 @@ game.os = "windows"
 ```
 
 例如
-```
+```system.ini
 [IOS]
 WIDTH = 1920
 HEIGHT = 1080
