@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ren'Py 攻略生成器</title>
+    <title>Ren'Py 攻略生成器 </title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+
     <style>
         :root {
             --primary: #ff6b6b;
@@ -11,67 +14,83 @@
             --dark: #2d3436;
             --light: #f7f1e3;
             --gray: #dfe6e9;
+            --blue: #54a0ff;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5;
             color: var(--dark);
-            max-width: 1000px;
+            max-width: 1200px; /* 加宽以容纳流程图 */
             margin: 0 auto;
             padding: 20px;
         }
-        h1 { text-align: center; color: var(--dark); }
+        h1 { text-align: center; color: var(--dark); margin-bottom: 10px; }
+        
+        /* 上传区域样式 */
         .upload-section {
             background: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
-        input[type="file"] {
-            display: none;
-        }
+        input[type="file"] { display: none; }
         .custom-file-upload {
             border: 2px dashed var(--primary);
             display: inline-block;
-            padding: 12px 24px;
+            padding: 10px 24px;
             cursor: pointer;
             border-radius: 5px;
             font-weight: bold;
             color: var(--primary);
             transition: all 0.3s;
         }
-        .custom-file-upload:hover {
-            background: var(--primary);
-            color: white;
-        }
-        #file-count { margin-top: 10px; font-size: 0.9em; color: #666; }
+        .custom-file-upload:hover { background: var(--primary); color: white; }
         
-        .output-container {
+        /* 标签页切换样式 */
+        .tabs {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            display: none; /* 初始隐藏，上传后显示 */
         }
-        
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #ddd;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1em;
+            transition: 0.3s;
+        }
+        .tab-btn.active {
+            background: var(--blue);
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* 内容视图容器 */
+        .view-container { display: none; }
+        .view-container.active { display: block; }
+
+        /* --- 视图1：文字攻略样式 (保留原版) --- */
         .story-block {
             background: white;
             border-left: 5px solid var(--secondary);
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
         }
-
         .label-title {
             font-size: 1.2em;
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
-        
         .badge {
             font-size: 0.7em;
             background: var(--dark);
@@ -79,7 +98,6 @@
             padding: 2px 6px;
             border-radius: 4px;
         }
-
         .menu-block {
             background: #fafafa;
             border: 1px solid var(--gray);
@@ -87,49 +105,79 @@
             padding: 10px;
             border-radius: 5px;
         }
-        
         .choice-item {
             margin: 8px 0;
             padding: 8px;
             background: white;
             border: 1px solid #eee;
             border-radius: 4px;
-            display: flex;
-            flex-direction: column;
         }
-        
-        .choice-text {
-            font-weight: bold;
-            color: var(--primary);
-        }
-        
-        .choice-result {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 4px;
-            padding-left: 15px;
-            border-left: 2px solid #ddd;
-        }
+        .choice-text { font-weight: bold; color: var(--primary); }
+        .choice-result { font-size: 0.9em; color: #666; display: block; margin-top: 4px; padding-left: 10px; border-left: 2px solid #ddd;}
 
-        .loading { text-align: center; display: none; }
+        /* --- 视图2：Mermaid 流程图样式 --- */
+        #graph-view {
+            height: 700px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            overflow: hidden; /* 隐藏溢出以支持 pan-zoom */
+            position: relative;
+        }
+        #mermaid-output { height: 100%; width: 100%; }
+        #mermaid-output svg { height: 100%; width: 100%; }
+
+        .loading { text-align: center; margin: 20px; display: none; font-size: 1.2em; color: #666;}
     </style>
 </head>
 <body>
 
-    <h1>🎮 Ren'Py 游戏脚本攻略生成器</h1>
+    <h1>🎮 Ren'Py 游戏脚本解析器</h1>
 
     <div class="upload-section">
         <label for="file-upload" class="custom-file-upload">
             📂 上传 .rpy 脚本文件 (支持多选)
         </label>
         <input id="file-upload" type="file" multiple accept=".rpy,.txt" />
-        <div id="file-count">未选择文件</div>
+        <div id="file-count" style="margin-top:10px; color:#666;">未选择文件</div>
     </div>
 
-    <div id="loading" class="loading">正在解析脚本...</div>
-    <div id="output" class="output-container"></div>
+    <div id="tab-controls" class="tabs">
+        <button class="tab-btn active" onclick="switchTab('text')">📄 文字攻略列表</button>
+        <button class="tab-btn" onclick="switchTab('graph')">📊 可视化流程图</button>
+    </div>
+
+    <div id="loading" class="loading">正在解析并生成图形...</div>
+
+    <div id="text-view" class="view-container active">
+        </div>
+
+    <div id="graph-view" class="view-container">
+        <div id="mermaid-output"></div>
+    </div>
 
 <script>
+    // Mermaid 初始化
+    mermaid.initialize({
+        startOnLoad: false, // 手动加载
+        theme: 'base',
+        flowchart: { curve: 'basis', htmlLabels: true },
+        themeVariables: { primaryColor: '#dfe6e9', secondaryColor: '#ff7675' }
+    });
+
+    let panZoomInstance = null;
+
+    // 标签页切换逻辑
+    function switchTab(tabName) {
+        // 切换按钮样式
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // 切换视图显示
+        document.querySelectorAll('.view-container').forEach(view => view.classList.remove('active'));
+        document.getElementById(tabName + '-view').classList.add('active');
+    }
+
     document.getElementById('file-upload').addEventListener('change', handleFileSelect, false);
 
     async function handleFileSelect(evt) {
@@ -138,21 +186,32 @@
 
         document.getElementById('file-count').textContent = `已选择 ${files.length} 个文件`;
         document.getElementById('loading').style.display = 'block';
-        document.getElementById('output').innerHTML = '';
+        document.getElementById('text-view').innerHTML = '';
+        document.getElementById('mermaid-output').innerHTML = '';
+        document.getElementById('tab-controls').style.display = 'none';
 
-        const allContent = [];
+        // 读取所有文件内容
+        let combinedContent = "";
+        const fileListObj = [];
         
-        // 读取所有文件
         for (let f of files) {
             const text = await readFileAsText(f);
-            allContent.push({ name: f.name, content: text });
+            combinedContent += text + "\n";
+            fileListObj.push({name: f.name, content: text});
         }
 
-        // 解析并渲染
-        setTimeout(() => {
-            const parsedData = parseRenpy(allContent);
-            renderWalkthrough(parsedData);
+        setTimeout(async () => {
+            // 1. 生成文字攻略 (基于原版逻辑)
+            const textData = parseRenpyForText(fileListObj);
+            renderTextWalkthrough(textData);
+
+            // 2. 生成流程图 (基于图表逻辑)
+            const mermaidCode = parseRenpyForMermaid(combinedContent);
+            await renderMermaidGraph(mermaidCode);
+
+            // 完成
             document.getElementById('loading').style.display = 'none';
+            document.getElementById('tab-controls').style.display = 'flex';
         }, 100);
     }
 
@@ -160,145 +219,204 @@
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (e) => resolve(e.target.result);
-            reader.onerror = (e) => reject(e);
+            reader.onerror = reject;
             reader.readAsText(file);
         });
     }
 
-    // 核心解析逻辑
-    function parseRenpy(fileList) {
-        let labels = {}; // 存储所有 Label 的内容
+    // ==========================================
+    // 逻辑 A: 生成文字攻略 (保留原版优秀逻辑)
+    // ==========================================
+    function parseRenpyForText(fileList) {
+        let labels = {};
         let currentLabel = "unknown";
-        
-        // 1. 预处理：将所有文件合并，或者按文件扫描 Label
-        // 为了简单起见，我们逐行扫描，建立 "Label -> Menus" 的映射
         
         fileList.forEach(file => {
             const lines = file.content.split(/\r?\n/);
             let inMenu = false;
             let currentMenu = null;
-            let currentIndent = 0;
 
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
                 let trimmed = line.trim();
-                
-                // 跳过注释
                 if (trimmed.startsWith('#') || trimmed === '') continue;
-
-                // 计算缩进
                 const indent = line.search(/\S|$/);
 
-                // 检测 Label 定义
                 const labelMatch = trimmed.match(/^label\s+(\w+):/);
                 if (labelMatch) {
                     currentLabel = labelMatch[1];
-                    if (!labels[currentLabel]) {
-                        labels[currentLabel] = { menus: [] };
-                    }
+                    if (!labels[currentLabel]) labels[currentLabel] = { menus: [] };
                     inMenu = false;
                     continue;
                 }
 
-                // 检测 Menu 开始
                 if (trimmed === 'menu:') {
                     inMenu = true;
                     currentMenu = { choices: [] };
-                    // 将菜单关联到当前 Label
                     if (!labels[currentLabel]) labels[currentLabel] = { menus: [] };
                     labels[currentLabel].menus.push(currentMenu);
                     continue;
                 }
 
-                // 解析 Menu 内部
                 if (inMenu) {
-                    // 如果缩进回到 Menu 级别或更少，说明 Menu 结束
-                    // 简单判定：Renpy Menu 选项通常有缩进
-                    // 这里做一个简化的正则匹配： "选项文本":
-                    
-                    const choiceMatch = trimmed.match(/^"(.*?)"(?:\s.*)?:/); // 匹配 "Choice Text":
+                    const choiceMatch = trimmed.match(/^"(.*?)"(?:\s.*)?:/);
                     if (choiceMatch) {
                         let choiceText = choiceMatch[1];
-                        
-                        // 尝试向后看几行，寻找 jump/call/$ variable
                         let outcome = [];
                         let j = i + 1;
+                        // 向下预览几行看结果
                         while(j < lines.length) {
                             let nextLine = lines[j];
                             let nextTrim = nextLine.trim();
                             let nextIndent = nextLine.search(/\S|$/);
+                            if (nextIndent <= indent && nextTrim !== '') break; // 退出选项块
                             
-                            // 如果下一行缩进小于等于当前选项行，说明选项块结束
-                            if (nextIndent <= indent && nextTrim !== '') break;
-                            
-                            if (nextTrim.startsWith('jump ')) {
-                                outcome.push(`跳转至: <b>${nextTrim.split(' ')[1]}</b>`);
-                            } else if (nextTrim.startsWith('call ')) {
-                                outcome.push(`调用事件: ${nextTrim.split(' ')[1]}`);
-                            } else if (nextTrim.startsWith('$')) {
-                                // 变量赋值
-                                outcome.push(`<i>${nextTrim}</i>`);
-                            }
+                            if (nextTrim.startsWith('jump ')) outcome.push(`跳转 ➔ <b>${nextTrim.split(' ')[1]}</b>`);
+                            else if (nextTrim.startsWith('$')) outcome.push(`变量 <i>${nextTrim}</i>`);
+                            else if (nextTrim === 'return') outcome.push(`<b>流程结束</b>`);
                             j++;
                         }
-                        
-                        currentMenu.choices.push({
-                            text: choiceText,
-                            result: outcome.join('<br>') || "继续剧情"
-                        });
+                        currentMenu.choices.push({ text: choiceText, result: outcome.join('<br>') || "继续剧情" });
                     }
                 }
             }
         });
-
         return labels;
     }
 
-    function renderWalkthrough(labels) {
-        const output = document.getElementById('output');
+    function renderTextWalkthrough(labels) {
+        const output = document.getElementById('text-view');
         const sortedKeys = Object.keys(labels).sort((a, b) => {
-            if (a === 'start') return -1; // 确保 start 在最前
-            if (b === 'start') return 1;
+            if (a === 'start') return -1;
             return a.localeCompare(b);
         });
 
         if (sortedKeys.length === 0) {
-            output.innerHTML = '<div class="story-block">未检测到有效的 label 或 menu 结构。请确认上传了 .rpy 源码文件。</div>';
+            output.innerHTML = '<div class="story-block">未找到有效 Label。</div>';
             return;
         }
 
         sortedKeys.forEach(key => {
             const data = labels[key];
-            // 只显示包含选项的 Label，或者 start label
-            if (data.menus.length === 0 && key !== 'start') return;
+            if (data.menus.length === 0 && key !== 'start') return; // 隐藏无选项的label
 
             const block = document.createElement('div');
             block.className = 'story-block';
-            
             let html = `<div class="label-title"><span class="badge">Label</span> ${key}</div>`;
             
-            if (data.menus.length === 0) {
-                html += `<div style="color:#888; font-style:italic;">此段落无分支选项</div>`;
-            } else {
+            if (data.menus.length === 0) html += `<div style="color:#888; font-style:italic;">此章节开始</div>`;
+            else {
                 data.menus.forEach((menu, index) => {
                     html += `<div class="menu-block"><strong>🤔 抉择点 ${index + 1}</strong>`;
                     menu.choices.forEach(choice => {
-                        html += `
-                            <div class="choice-item">
-                                <span class="choice-text">👉 ${choice.text}</span>
-                                <span class="choice-result">${choice.result}</span>
-                            </div>
-                        `;
+                        html += `<div class="choice-item">
+                                    <span class="choice-text">👉 ${choice.text}</span>
+                                    <span class="choice-result">${choice.result}</span>
+                                 </div>`;
                     });
                     html += `</div>`;
                 });
             }
-
             block.innerHTML = html;
             output.appendChild(block);
         });
     }
-</script>
 
+    // ==========================================
+    // 逻辑 B: 生成 Mermaid 流程图 (新功能)
+    // ==========================================
+    function parseRenpyForMermaid(fullText) {
+        const lines = fullText.split(/\r?\n/);
+        let adjList = {};
+        let allNodes = new Set(['start', 'END']);
+        let currentLabel = 'root'; 
+        let inMenu = false;
+        let activeChoiceText = null;
+        let currentMenuIndent = -1;
+
+        function addEdge(src, tgt, txt) {
+            if(!src || !tgt) return;
+            if(!adjList[src]) adjList[src] = [];
+            if(!adjList[src].some(e=>e.target===tgt && e.text===txt)) {
+                adjList[src].push({target: tgt, text: txt});
+                allNodes.add(src); allNodes.add(tgt);
+            }
+        }
+        function safe(s) { return s ? s.replace(/[^a-zA-Z0-9_]/g, '_') : 'unknown'; }
+        function safeTxt(s) { return s ? s.replace(/"/g, "'").trim() : ''; }
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+            let trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) continue;
+            const indent = line.search(/\S|$/);
+
+            const labelMatch = trimmed.match(/^label\s+(\w+)\s*:/);
+            if (labelMatch) {
+                currentLabel = labelMatch[1];
+                inMenu = false; activeChoiceText = null;
+                continue;
+            }
+
+            if (trimmed === 'menu:') { inMenu = true; currentMenuIndent = indent; continue; }
+            if (inMenu && indent <= currentMenuIndent && trimmed !== '') { inMenu = false; activeChoiceText = null; }
+
+            if (inMenu) {
+                const choiceMatch = trimmed.match(/^"(.*?)"(?:\s.*)?:/);
+                if (choiceMatch) activeChoiceText = safeTxt(choiceMatch[1]);
+                else if (activeChoiceText) {
+                    if (trimmed.startsWith('jump ')) {
+                        addEdge(currentLabel, trimmed.split(/\s+/)[1], activeChoiceText);
+                        activeChoiceText = null; 
+                    } else if (trimmed === 'return') {
+                        addEdge(currentLabel, 'END', activeChoiceText);
+                        activeChoiceText = null;
+                    }
+                }
+            } else {
+                if (trimmed.startsWith('jump ')) addEdge(currentLabel, trimmed.split(/\s+/)[1], null);
+                if (trimmed === 'return') addEdge(currentLabel, 'END', null);
+            }
+        }
+
+        // 构建 Mermaid 代码
+        let str = "graph TD;\n";
+        str += "classDef startNode fill:#55efc4,stroke:#00b894,stroke-width:2px;\n";
+        str += "classDef endNode fill:#fab1a0,stroke:#e17055,stroke-width:2px;\n";
+        if (allNodes.has('start')) str += `${safe('start')}(("START")):::startNode;\n`;
+        if (allNodes.has('END')) str += `${safe('END')}(("END")):::endNode;\n`;
+
+        for (let src in adjList) {
+            if(src === 'root' && adjList[src].length === 0) continue;
+            adjList[src].forEach(e => {
+                if (e.text) str += `${safe(src)} -- "${e.text}" --> ${safe(e.target)};\n`;
+                else str += `${safe(src)} --> ${safe(e.target)};\n`;
+            });
+        }
+        return str;
+    }
+
+    async function renderMermaidGraph(code) {
+        const container = document.getElementById('mermaid-output');
+        if (panZoomInstance) { panZoomInstance.destroy(); panZoomInstance = null; }
+        
+        container.innerHTML = code;
+        
+        try {
+            await mermaid.run({ nodes: [container] });
+            const svg = container.querySelector('svg');
+            if (svg) {
+                svg.style.width = '100%'; 
+                svg.style.height = '100%';
+                panZoomInstance = svgPanZoom(svg, {
+                    zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true, minZoom: 0.1
+                });
+            }
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<div style="padding:20px; color:red;">流程图生成失败，可能是脚本结构过于复杂。</div>';
+        }
+    }
+</script>
 </body>
 </html>
