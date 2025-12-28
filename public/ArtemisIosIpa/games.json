@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "name": "星际探险家",
+        "image": "assets/placeholder.jpg",  // 实际使用时替换为图片URL
+        "porter": "星空工作室",
+        "installer": "Artemis爱好者",
+        "downloadLink": "#",  // 替换为真实下载链接
+        "version": "v1.2.0",
+        "size": "86MB"
+    },
+    {
+        "id": 2,
+        "name": "像素勇者传说",
+        "image": "assets/placeholder.jpg",
+        "porter": "复古游戏组",
+        "installer": "Artemis爱好者",
+        "downloadLink": "#",
+        "version": "v2.1.3",
+        "size": "112MB"
+    },
+    {
+        "id": 3,
+        "name": "赛博跑酷2048",
+        "image": "assets/placeholder.jpg",
+        "porter": "未来科技社",
+        "installer": "Artemis爱好者",
+        "downloadLink": "#",
+        "version": "v1.0.5",
+        "size": "68MB"
+    },
+    {
+        "id": 4,
+        "name": "魔法学院物语",
+        "image": "assets/placeholder.jpg",
+        "porter": "奇幻工坊",
+        "installer": "Artemis爱好者",
+        "downloadLink": "#",
+        "version": "v1.5.2",
+        "size": "94MB"
+    }
+]
