@@ -3,122 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artemis引擎iOS直装分享</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Artemis 游戏直装分享站</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav class="navbar">
-        <div class="logo">Artemis直装站</div>
-        <div class="nav-links">
-            <a href="#" class="nav-link active" data-page="intro">引擎介绍</a>
-            <a href="#" class="nav-link" data-page="download">游戏下载</a>
-            <a href="#" class="nav-link" data-page="author">关于作者</a>
-            <a href="#" class="nav-link" data-page="links">友情链接</a>
-        </div>
-        <div class="hamburger"><i class="fas fa-bars"></i></div>
-    </nav>
 
-    <!-- 页面容器 -->
-    <main class="page-container">
-        <!-- 介绍页 -->
-        <section id="intro" class="page active">
-            <h2 class="section-title">Artemis引擎介绍</h2>
-            <div class="intro-content card">
-                <p>Artemis是一款轻量级iOS游戏开发引擎，专注2D/2.5D游戏快速开发，支持Lua脚本热更新，无需越狱即可实现高质量游戏直装体验。</p>
-                
-                <div class="engine-features">
-                    <div class="feature-card card">
-                        <i class="fas fa-bolt"></i>
-                        <h3>高效开发</h3>
-                        <p>可视化编辑器+丰富模板，单人开发者3天可出Demo</p>
-                    </div>
-                    <div class="feature-card card">
-                        <i class="fas fa-mobile-alt"></i>
-                        <h3>iOS原生体验</h3>
-                        <p>深度优化渲染管线，60FPS稳定运行，媲美App Store应用</p>
-                    </div>
-                    <div class="feature-card card">
-                        <i class="fas fa-sync-alt"></i>
-                        <h3>热更新支持</h3>
-                        <p>Lua脚本动态更新，修复BUG无需重新安装</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 下载页（动态渲染游戏卡片） -->
-        <section id="download" class="page">
-            <h2 class="section-title">iOS直装游戏下载</h2>
-            <div class="games-grid" id="games-container">
-                <!-- 游戏卡片将通过JS从games.json动态加载 -->
-                <div class="loading">加载中...</div>
-            </div>
-            
-            <!-- 安装注意事项 -->
-            <div class="card notice-card">
-                <h3><i class="fas fa-exclamation-circle" style="color: var(--accent);"></i> iOS安装须知</h3>
+    <header>
+        <div class="container">
+            <div class="logo">Artemis iOS Share</div>
+            <nav>
                 <ul>
-                    <li>下载后需在「设置-通用-设备管理」信任企业证书</li>
-                    <li>首次打开可能提示「未受信任」，按上述步骤操作后重试</li>
-                    <li>游戏数据存储在本地，卸载后需重新下载</li>
+                    <li><a href="#intro">引擎介绍</a></li>
+                    <li><a href="#download">游戏下载</a></li>
+                    <li><a href="#author">关于作者</a></li>
+                    <li><a href="#links">友情链接</a></li>
                 </ul>
-            </div>
-        </section>
+            </nav>
+        </div>
+    </header>
 
-        <!-- 作者页 -->
-        <section id="author" class="page">
-            <h2 class="section-title">关于作者</h2>
-            <div class="author-profile card">
-                <div class="avatar"><i class="fas fa-user" style="font-size: 3rem; color: #999;"></i></div>
-                <h3>Artemis爱好者</h3>
-                <p>独立游戏开发者，专注iOS轻量游戏分享。因热爱Artemis引擎的高效开发体验，搭建此站分享精选直装游戏，让更多玩家体验优质独立作品。</p>
-                
+    <section id="intro" class="section">
+        <div class="container">
+            <h2>什么是 Artemis 引擎？</h2>
+            <div class="content-box">
+                <p>Artemis Engine 是一个跨平台的游戏引擎，广泛用于视觉小说（Visual Novel）的开发与移植。</p>
+                <p>本项目致力于整理并分享基于 Artemis 引擎移植的 iOS 直装版游戏，让大家在 iPhone/iPad 上也能随时随地享受优秀的作品。</p>
+                <p><strong>注意：</strong> 本站资源仅供学习交流，请支持正版。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="download" class="section bg-light">
+        <div class="container">
+            <h2>游戏资源下载</h2>
+            <p class="subtitle">所有资源均为 iOS 直装包 (IPA) 或相关配置</p>
+            
+            <div id="game-grid" class="game-grid">
+                <div class="loading">正在加载游戏列表...</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="author" class="section">
+        <div class="container">
+            <h2>关于作者</h2>
+            <div class="author-card">
+                <div class="avatar">
+                    <img src="https://via.placeholder.com/100?text=Me" alt="作者头像">
+                </div>
+                <h3>这里写你的名字</h3>
+                <p>热衷于 Artemis 引擎游戏移植与分享。</p>
+                <p>如果你有想要移植的游戏，或者发现了 Bug，欢迎联系我。</p>
                 <div class="social-links">
-                    <a href="#"><i class="fab fa-github"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="mailto:contact@artemis-install.com"><i class="fas fa-envelope"></i></a>
+                    <a href="#">Bilibili</a>
+                    <a href="#">Email</a>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- 友情链接页 -->
-        <section id="links" class="page">
-            <h2 class="section-title">友情链接</h2>
+    <section id="links" class="section bg-light">
+        <div class="container">
+            <h2>友情链接</h2>
             <div class="links-grid">
-                <div class="link-card card">
-                    <div class="link-icon"><i class="fas fa-globe"></i></div>
-                    <div>
-                        <h3>Artemis引擎官网</h3>
-                        <p>官方文档与技术支持</p>
-                        <a href="#" class="btn small-btn">访问</a>
-                    </div>
-                </div>
-                <div class="link-card card">
-                    <div class="link-icon"><i class="fas fa-users"></i></div>
-                    <div>
-                        <h3>iOS独立游戏社区</h3>
-                        <p>玩家交流&开发者分享</p>
-                        <a href="#" class="btn small-btn">加入</a>
-                    </div>
-                </div>
-                <div class="link-card card">
-                    <div class="link-icon"><i class="fas fa-toolbox"></i></div>
-                    <div>
-                        <h3>游戏开发工具集</h3>
-                        <p>免费素材/音效/插件资源</p>
-                        <a href="#" class="btn small-btn">获取</a>
-                    </div>
-                </div>
+                <a href="#" class="link-card">Artemis 官方文档</a>
+                <a href="#" class="link-card">某某汉化组</a>
+                <a href="#" class="link-card">Galgame 论坛</a>
+                <a href="#" class="link-card">GitHub 仓库</a>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <!-- 页脚 -->
     <footer>
-        <p>© 2025 Artemis引擎iOS直装分享站 | 仅供学习交流使用</p>
-        <p class="disclaimer">免责声明：本站资源均来自网络，版权归原作者所有，下载后请在24小时内删除，不得用于商业用途。</p>
+        <p>&copy; 2023 Artemis iOS Share. All Rights Reserved.</p>
     </footer>
 
     <script src="script.js"></script>
