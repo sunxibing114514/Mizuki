@@ -1,0 +1,172 @@
+/* 基础变量与重置 */
+:root {
+    --primary: #165DFF;
+    --accent: #FF7D00;
+    --bg-dark: #1D2129;
+    --bg-light: #F2F3F5;
+    --text-main: #1D2129;
+    --text-light: #86909C;
+    --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --transition: all 0.3s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+    font-family: system-ui, -apple-system, sans-serif; 
+    background: var(--bg-light); 
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+/* 导航栏 */
+.navbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    z-index: 100; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center;
+}
+.logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a { text-decoration: none; color: var(--text-main); font-weight: 500; transition: var(--transition); }
+.nav-links a:hover, .nav-links a.active { color: var(--primary); }
+.hamburger { display: none; font-size: 1.5rem; cursor: pointer; }
+
+/* 页面容器 */
+.page-container { max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; }
+.page { display: none; animation: fadeIn 0.5s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* 通用组件 */
+.section-title { font-size: 2rem; margin-bottom: 2rem; color: var(--text-main); text-align: center; }
+.card { background: white; border-radius: 12px; box-shadow: var(--card-shadow); padding: 1.5rem; transition: var(--transition); }
+.card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+.btn { 
+    display: inline-block; padding: 0.8rem 1.5rem; 
+    background: var(--accent); color: white; border: none; border-radius: 8px; 
+    font-weight: 600; cursor: pointer; transition: var(--transition); text-decoration: none;
+}
+.btn:hover { background: #E06C00; transform: scale(1.05); }
+.small-btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
+.loading { text-align: center; padding: 2rem; color: var(--text-light); }
+
+/* 介绍页样式 */
+.intro-content { text-align: center; max-width: 800px; margin: 0 auto; }
+.engine-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 3rem; }
+.feature-card i { font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; }
+
+/* 下载页：方格式布局（核心） */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 响应式网格，最小280px */
+    gap: 2rem; /* 卡片间距 */
+    margin-bottom: 2rem;
+}
+.game-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* 统一卡片高度 */
+}
+.game-image {
+    width: 100%;
+    height: 180px; /* 固定图片高度，保持方形比例 */
+    object-fit: cover; /* 图片裁剪适应 */
+    border-radius: 8px 8px 0 0;
+    background: #f0f0f0; /* 占位背景 */
+}
+.game-info {
+    padding: 1rem 0;
+    flex-grow: 1; /* 信息区自适应高度 */
+}
+.game-name { 
+    font-size: 1.2rem; 
+    font-weight: 600; 
+    color: var(--primary); 
+    margin-bottom: 0.5rem;
+}
+.game-author {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.3rem;
+}
+.author-label { color: var(--text-main); font-weight: 500; }
+.download-area {
+    margin-top: 1rem;
+    text-align: center;
+}
+.qr-code {
+    width: 100px;
+    height: 100px;
+    margin: 0.5rem auto;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 2rem;
+    color: var(--text-light);
+}
+
+/* 安装须知卡片 */
+.notice-card {
+    margin-top: 2rem;
+    padding: 1.5rem;
+}
+.notice-card ul { padding-left: 1.5rem; margin-top: 1rem; }
+
+/* 作者页样式 */
+.author-profile { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 600px; margin: 0 auto; }
+.avatar { 
+    width: 150px; height: 150px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 4px solid var(--primary); 
+    margin-bottom: 1.5rem; 
+    background: #eee; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.social-links { display: flex; gap: 1.5rem; margin-top: 1.5rem; font-size: 1.5rem; }
+
+/* 友情链接页样式 */
+.links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+.link-card { display: flex; align-items: center; gap: 1rem; }
+.link-icon { 
+    width: 50px; height: 50px; 
+    background: var(--primary); 
+    border-radius: 10px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: white; 
+    font-size: 1.5rem; 
+}
+
+/* 页脚 */
+footer { 
+    background: var(--bg-dark); 
+    color: white; 
+    text-align: center; 
+    padding: 2rem; 
+    margin-top: 4rem; 
+}
+.disclaimer { color: var(--text-light); font-size: 0.9rem; margin-top: 1rem; }
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .nav-links { 
+        display: none; 
+        position: absolute; 
+        top: 100%; 
+        left: 0; 
+        right: 0; 
+        background: white; 
+        flex-direction: column; 
+        padding: 1rem; 
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+    }
+    .nav-links.active { display: flex; }
+    .hamburger { display: block; }
+    .games-grid { grid-template-columns: 1fr; } /* 手机端单列 */
+    .engine-features { grid-template-columns: 1fr; }
+}
