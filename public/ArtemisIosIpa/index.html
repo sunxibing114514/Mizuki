@@ -3,81 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artemis 游戏直装分享站</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Artemis 游戏直装分享</title>
+    <style>
+        /* ================= 样式区域 (CSS) ================= */
+        :root {
+            --primary: #4a90e2;   /* 主题色：蓝色 */
+            --dark: #2c3e50;      /* 深色文字 */
+            --light: #f5f6fa;     /* 浅色背景 */
+            --white: #ffffff;
+            --text-gray: #666;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: #333; line-height: 1.6; background-color: var(--white); }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* 通用布局类 */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .section { padding: 60px 0; min-height: auto; }
+        .bg-gray { background-color: var(--light); }
+        .text-center { text-align: center; }
+        
+        .section-title { font-size: 2rem; margin-bottom: 10px; color: var(--dark); text-align: center; }
+        .section-desc { color: var(--text-gray); margin-bottom: 40px; text-align: center; }
+
+        /* 顶部导航栏 */
+        header { background: var(--dark); color: var(--white); padding: 15px 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .nav-box { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.4rem; font-weight: bold; letter-spacing: 1px; }
+        nav a { margin-left: 20px; color: #ccc; font-size: 0.95rem; }
+        nav a:hover { color: var(--white); }
+
+        /* 介绍页 */
+        .intro-content { max-width: 800px; margin: 40px auto; text-align: center; padding: 30px; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .intro-content h2 { margin-bottom: 20px; color: var(--primary); }
+        .intro-content p { margin-bottom: 15px; font-size: 1.05rem; }
+
+        /* 核心：游戏网格布局 */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 自动适应列宽 */
+            gap: 30px;
+            padding-bottom: 40px;
+        }
+
+        .game-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+
+        .game-img { 
+            width: 100%; 
+            height: 180px; 
+            object-fit: cover; 
+            background-color: #eee; /* 图片未加载时的背景色 */
+        }
+
+        .game-info { padding: 20px; flex-grow: 1; }
+        .game-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 12px; color: var(--dark); }
+        
+        .info-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px; color: var(--text-gray); }
+        .author-name { color: var(--primary); font-weight: 500; }
+
+        .download-btn {
+            display: block;
+            text-align: center;
+            background: var(--primary);
+            color: var(--white);
+            padding: 14px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .download-btn:hover { background: #357abd; }
+
+        /* Loading 动画 */
+        .loading-box { grid-column: 1 / -1; text-align: center; padding: 50px 0; }
+        .spinner {
+            width: 50px; height: 50px; 
+            border: 5px solid #f3f3f3; 
+            border-top: 5px solid var(--primary); 
+            border-radius: 50%; 
+            margin: 0 auto 20px; 
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* 作者页 & 底部 */
+        .author-card {
+            background: var(--white);
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .avatar { 
+            width: 100px; height: 100px; 
+            background: var(--dark); color: white; 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px; font-size: 2rem; 
+        }
+        .link-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
+        .link-tag { background: #eef2f7; padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; }
+        .link-tag:hover { background: var(--primary); color: white; }
+
+        footer { background: var(--dark); color: #7f8c8d; text-align: center; padding: 30px; margin-top: 60px; font-size: 0.9rem; }
+
+        /* 移动端优化 */
+        @media (max-width: 600px) {
+            .nav-box { flex-direction: column; gap: 15px; }
+            .section-title { font-size: 1.5rem; }
+        }
+    </style>
 </head>
 <body>
 
     <header>
-        <div class="container">
-            <div class="logo">Artemis iOS Share</div>
+        <div class="container nav-box">
+            <div class="logo">Artemis iOS Hub</div>
             <nav>
-                <ul>
-                    <li><a href="#intro">引擎介绍</a></li>
-                    <li><a href="#download">游戏下载</a></li>
-                    <li><a href="#author">关于作者</a></li>
-                    <li><a href="#links">友情链接</a></li>
-                </ul>
+                <a href="#intro">介绍</a>
+                <a href="#download">下载列表</a>
+                <a href="#author">作者</a>
+                <a href="#links">友链</a>
             </nav>
         </div>
     </header>
 
     <section id="intro" class="section">
         <div class="container">
-            <h2>什么是 Artemis 引擎？</h2>
-            <div class="content-box">
-                <p>Artemis Engine 是一个跨平台的游戏引擎，广泛用于视觉小说（Visual Novel）的开发与移植。</p>
-                <p>本项目致力于整理并分享基于 Artemis 引擎移植的 iOS 直装版游戏，让大家在 iPhone/iPad 上也能随时随地享受优秀的作品。</p>
-                <p><strong>注意：</strong> 本站资源仅供学习交流，请支持正版。</p>
+            <div class="intro-content">
+                <h2>Artemis 引擎 iOS 直装分享</h2>
+                <p>这里专注于收集和制作基于 Artemis 引擎的视觉小说 iOS 直装包。</p>
+                <p>解决了传统签名繁琐的问题，让好游戏在手机上触手可及。</p>
             </div>
         </div>
     </section>
 
-    <section id="download" class="section bg-light">
+    <section id="download" class="section bg-gray">
         <div class="container">
-            <h2>游戏资源下载</h2>
-            <p class="subtitle">所有资源均为 iOS 直装包 (IPA) 或相关配置</p>
-            
+            <h2 class="section-title">游戏资源下载</h2>
+            <p class="section-desc">列表实时从云端更新，点击按钮即可获取</p>
+
             <div id="game-grid" class="game-grid">
-                <div class="loading">正在加载游戏列表...</div>
+                <div class="loading-box">
+                    <div class="spinner"></div>
+                    <p>正在连接服务器获取数据...</p>
+                </div>
             </div>
         </div>
     </section>
 
     <section id="author" class="section">
         <div class="container">
-            <h2>关于作者</h2>
+            <h2 class="section-title">关于作者</h2>
             <div class="author-card">
-                <div class="avatar">
-                    <img src="https://via.placeholder.com/100?text=Me" alt="作者头像">
-                </div>
-                <h3>这里写你的名字</h3>
-                <p>热衷于 Artemis 引擎游戏移植与分享。</p>
-                <p>如果你有想要移植的游戏，或者发现了 Bug，欢迎联系我。</p>
-                <div class="social-links">
-                    <a href="#">Bilibili</a>
-                    <a href="#">Email</a>
+                <div class="avatar">Me</div>
+                <h3>你的名字</h3>
+                <p>用爱发电的移植爱好者。</p>
+                <p>如果在安装过程中遇到问题，请通过下方方式联系我。</p>
+                <div class="link-tags">
+                    <a href="#" class="link-tag">Bilibili @你的ID</a>
+                    <a href="#" class="link-tag">QQ群: 123456</a>
+                    <a href="#" class="link-tag">Email Me</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="links" class="section bg-light">
+    <section id="links" class="section bg-gray">
         <div class="container">
-            <h2>友情链接</h2>
-            <div class="links-grid">
-                <a href="#" class="link-card">Artemis 官方文档</a>
-                <a href="#" class="link-card">某某汉化组</a>
-                <a href="#" class="link-card">Galgame 论坛</a>
-                <a href="#" class="link-card">GitHub 仓库</a>
+            <h2 class="section-title">友情链接</h2>
+            <div class="link-tags" style="justify-content: center;">
+                <a href="#" class="link-tag">Artemis 官方文档</a>
+                <a href="#" class="link-tag">某某汉化组</a>
+                <a href="#" class="link-tag">Galgame 论坛</a>
+                <a href="#" class="link-tag">GitHub 仓库</a>
             </div>
         </div>
     </section>
 
     <footer>
-        <p>&copy; 2023 Artemis iOS Share. All Rights Reserved.</p>
+        <p>免责声明：本站资源仅供学习交流，请支持正版游戏。</p>
+        <p>&copy; 2023 Artemis iOS Share</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+        // ================================================
+        // 【配置区】请在这里填入你的 JSON 直链 (Raw URL)
+        // 示例链接包含了两个测试游戏
+        const JSON_URL = 'https://gist.githubusercontent.com/yusong-h/a9e334863378393e80353c9447432829/raw/artemis_games_demo.json';
+        // ================================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGames();
+        });
+
+        async function loadGames() {
+            const grid = document.getElementById('game-grid');
+            
+            try {
+                // 开始请求数据
+                const response = await fetch(JSON_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`网络响应错误 (状态码: ${response.status})`);
+                }
+
+                const games = await response.json();
+                
+                // 渲染数据
+                render(games, grid);
+
+            } catch (error) {
+                console.error('加载失败:', error);
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; color: #e74c3c; padding: 30px; background: white; border-radius: 8px;">
+                        <h3>😔 数据加载失败</h3>
+                        <p style="margin-top:10px;">无法获取游戏列表，请检查网络或 JSON 链接配置。</p>
+                        <p style="font-size:0.8rem; color:#999; margin-top:5px;">错误详情: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function render(games, container) {
+            container.innerHTML = ''; // 清空加载动画
+
+            if (!games || games.length === 0) {
+                container.innerHTML = '<p class="text-center" style="grid-column:1/-1;">暂时没有游戏数据。</p>';
+                return;
+            }
+
+            games.forEach(game => {
+                // 创建元素
+                const card = document.createElement('div');
+                card.className = 'game-card';
+
+                // 填充 HTML
+                // 注意：image 必须是网络链接
+                card.innerHTML = `
+                    <img src="${game.image}" alt="${game.name}" class="game-img" loading="lazy">
+                    <div class="game-info">
+                        <div class="game-title">${game.name}</div>
+                        <div class="info-row">
+                            <span>移植作者</span>
+                            <span class="author-name">${game.port_author}</span>
+                        </div>
+                        <div class="info-row">
+                            <span>直装制作</span>
+                            <span class="author-name">${game.install_author}</span>
+                        </div>
+                    </div>
+                    <a href="${game.link}" target="_blank" class="download-btn">下载游戏</a>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+    </script>
 </body>
 </html>
