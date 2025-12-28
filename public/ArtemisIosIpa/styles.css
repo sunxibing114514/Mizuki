@@ -1,172 +1,183 @@
-/* 基础变量与重置 */
-:root {
-    --primary: #165DFF;
-    --accent: #FF7D00;
-    --bg-dark: #1D2129;
-    --bg-light: #F2F3F5;
-    --text-main: #1D2129;
-    --text-light: #86909C;
-    --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    --transition: all 0.3s ease;
+/* 全局重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { 
-    font-family: system-ui, -apple-system, sans-serif; 
-    background: var(--bg-light); 
-    color: var(--text-main);
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
+    color: #333;
+    background-color: #f9f9f9;
 }
+
+/* 容器与通用样式 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
 
 /* 导航栏 */
-.navbar {
-    position: fixed; top: 0; left: 0; right: 0;
-    background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    z-index: 100; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center;
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-.logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
-.nav-links { display: flex; gap: 2rem; }
-.nav-links a { text-decoration: none; color: var(--text-main); font-weight: 500; transition: var(--transition); }
-.nav-links a:hover, .nav-links a.active { color: var(--primary); }
-.hamburger { display: none; font-size: 1.5rem; cursor: pointer; }
 
-/* 页面容器 */
-.page-container { max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; }
-.page { display: none; animation: fadeIn 0.5s ease; }
-.page.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-/* 通用组件 */
-.section-title { font-size: 2rem; margin-bottom: 2rem; color: var(--text-main); text-align: center; }
-.card { background: white; border-radius: 12px; box-shadow: var(--card-shadow); padding: 1.5rem; transition: var(--transition); }
-.card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
-.btn { 
-    display: inline-block; padding: 0.8rem 1.5rem; 
-    background: var(--accent); color: white; border: none; border-radius: 8px; 
-    font-weight: 600; cursor: pointer; transition: var(--transition); text-decoration: none;
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-.btn:hover { background: #E06C00; transform: scale(1.05); }
-.small-btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
-.loading { text-align: center; padding: 2rem; color: var(--text-light); }
 
-/* 介绍页样式 */
-.intro-content { text-align: center; max-width: 800px; margin: 0 auto; }
-.engine-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 3rem; }
-.feature-card i { font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; }
+.logo { font-size: 1.5rem; font-weight: bold; }
 
-/* 下载页：方格式布局（核心） */
-.games-grid {
+nav ul { display: flex; gap: 20px; }
+nav a { color: #ecf0f1; transition: color 0.3s; }
+nav a:hover { color: #3498db; }
+
+/* 章节通用 */
+.section {
+    padding: 60px 0;
+    min-height: 80vh; /* 每一页至少占屏幕大部分 */
+}
+
+.section h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: #2c3e50;
+}
+
+.subtitle {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #666;
+}
+
+.bg-light { background-color: #ffffff; }
+
+/* 1. 介绍页样式 */
+.content-box {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* 2. 下载页方格布局 (CSS Grid) */
+.game-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 响应式网格，最小280px */
-    gap: 2rem; /* 卡片间距 */
-    margin-bottom: 2rem;
+    /* 自动填充，每列最小280px，自适应宽度 */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 20px 0;
 }
+
 .game-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    border: 1px solid #eee;
     display: flex;
     flex-direction: column;
-    height: 100%; /* 统一卡片高度 */
 }
-.game-image {
+
+.game-card:hover {
+    transform: translateY(-5px);
+}
+
+.game-card img {
     width: 100%;
-    height: 180px; /* 固定图片高度，保持方形比例 */
-    object-fit: cover; /* 图片裁剪适应 */
-    border-radius: 8px 8px 0 0;
-    background: #f0f0f0; /* 占位背景 */
+    height: 180px;
+    object-fit: cover; /* 保证图片不变形 */
 }
-.game-info {
-    padding: 1rem 0;
-    flex-grow: 1; /* 信息区自适应高度 */
+
+.card-info {
+    padding: 20px;
+    flex-grow: 1; /* 让内容撑满 */
 }
-.game-name { 
-    font-size: 1.2rem; 
-    font-weight: 600; 
-    color: var(--primary); 
-    margin-bottom: 0.5rem;
-}
-.game-author {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin-bottom: 0.3rem;
-}
-.author-label { color: var(--text-main); font-weight: 500; }
-.download-area {
-    margin-top: 1rem;
+
+.card-info h3 { margin-bottom: 10px; color: #2c3e50; }
+.card-info p { font-size: 0.9rem; color: #555; margin-bottom: 5px; }
+.card-info .label { font-weight: bold; color: #7f8c8d; }
+
+.download-btn {
+    display: block;
     text-align: center;
+    background-color: #3498db;
+    color: white;
+    padding: 12px;
+    margin: 0 20px 20px 20px;
+    border-radius: 5px;
+    transition: background 0.3s;
 }
-.qr-code {
+
+.download-btn:hover { background-color: #2980b9; }
+
+/* 3. 作者页样式 */
+.author-card {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.author-card img {
     width: 100px;
     height: 100px;
-    margin: 0.5rem auto;
-    background: #f5f5f5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.social-links { margin-top: 20px; }
+.social-links a { margin: 0 10px; color: #3498db; text-decoration: underline; }
+
+/* 4. 友情链接样式 */
+.links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.link-card {
+    display: block;
+    background: #f1f2f6;
+    padding: 20px;
+    text-align: center;
     border-radius: 8px;
-    font-size: 2rem;
-    color: var(--text-light);
+    transition: background 0.3s;
 }
 
-/* 安装须知卡片 */
-.notice-card {
-    margin-top: 2rem;
-    padding: 1.5rem;
-}
-.notice-card ul { padding-left: 1.5rem; margin-top: 1rem; }
+.link-card:hover { background: #dfe4ea; }
 
-/* 作者页样式 */
-.author-profile { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 600px; margin: 0 auto; }
-.avatar { 
-    width: 150px; height: 150px; 
-    border-radius: 50%; 
-    object-fit: cover; 
-    border: 4px solid var(--primary); 
-    margin-bottom: 1.5rem; 
-    background: #eee; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.social-links { display: flex; gap: 1.5rem; margin-top: 1.5rem; font-size: 1.5rem; }
-
-/* 友情链接页样式 */
-.links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
-.link-card { display: flex; align-items: center; gap: 1rem; }
-.link-icon { 
-    width: 50px; height: 50px; 
-    background: var(--primary); 
-    border-radius: 10px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    color: white; 
-    font-size: 1.5rem; 
+/* 底部 */
+footer {
+    background: #2c3e50;
+    color: #bdc3c7;
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
 }
 
-/* 页脚 */
-footer { 
-    background: var(--bg-dark); 
-    color: white; 
-    text-align: center; 
-    padding: 2rem; 
-    margin-top: 4rem; 
-}
-.disclaimer { color: var(--text-light); font-size: 0.9rem; margin-top: 1rem; }
-
-/* 响应式设计 */
+/* 移动端适配 */
 @media (max-width: 768px) {
-    .nav-links { 
-        display: none; 
-        position: absolute; 
-        top: 100%; 
-        left: 0; 
-        right: 0; 
-        background: white; 
-        flex-direction: column; 
-        padding: 1rem; 
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-    }
-    .nav-links.active { display: flex; }
-    .hamburger { display: block; }
-    .games-grid { grid-template-columns: 1fr; } /* 手机端单列 */
-    .engine-features { grid-template-columns: 1fr; }
+    header .container { flex-direction: column; }
+    nav ul { margin-top: 15px; flex-wrap: wrap; justify-content: center; }
 }
