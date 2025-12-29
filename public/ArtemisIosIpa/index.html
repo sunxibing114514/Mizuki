@@ -228,6 +228,194 @@
             text-decoration: underline;
         }
         
+        /* 查看投稿格式按钮 */
+        .format-btn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 12px 25px;
+            background: linear-gradient(90deg, var(--accent), #ff9a8b);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(255, 126, 95, 0.3);
+        }
+        
+        .format-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 126, 95, 0.4);
+        }
+        
+        .format-btn i {
+            margin-right: 8px;
+        }
+        
+        /* 模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-tabs {
+            display: flex;
+            background: var(--light-gray);
+            border-bottom: 1px solid var(--gray);
+        }
+        
+        .modal-tab {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+        
+        .modal-tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            background: white;
+        }
+        
+        .modal-tab:hover:not(.active) {
+            background: rgba(74, 111, 165, 0.1);
+        }
+        
+        .modal-content {
+            padding: 0;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .json-example {
+            background: #f8f9fa;
+            border: 1px solid var(--gray);
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
+        .json-field {
+            margin-bottom: 15px;
+        }
+        
+        .json-field h4 {
+            color: var(--dark);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .json-field p {
+            color: var(--dark-gray);
+            margin-bottom: 10px;
+        }
+        
+        .copy-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .copy-btn:hover {
+            background: var(--secondary);
+        }
+        
         /* 下载页样式 */
         .games-grid {
             display: grid;
@@ -424,6 +612,14 @@
             .contribution-info {
                 flex-direction: column;
             }
+            
+            .modal {
+                width: 95%;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.5rem;
+            }
         }
         
         @media (max-width: 480px) {
@@ -442,6 +638,14 @@
             }
             
             .contribution-section {
+                padding: 20px;
+            }
+            
+            .modal-header {
+                padding: 15px 20px;
+            }
+            
+            .tab-content {
                 padding: 20px;
             }
         }
@@ -503,7 +707,7 @@
             <h1 class="page-title">Artemis引擎游戏分享</h1>
             <div class="hero">
                 <h1>欢迎来到Artemis引擎游戏分享站</h1>
-                <p>这里提供精选的iOS直装游戏资源，所有游戏均为Artemis引擎</p>
+                <p>这里提供精选的iOS直装游戏资源，所有游戏均基于Artemis引擎优化</p>
             </div>
             
             <!-- 新增投稿区域 -->
@@ -518,9 +722,14 @@
                     <div class="contribution-item">
                         <h3><i class="fas fa-envelope"></i> 投稿邮箱</h3>
                         <p><a href="mailto:artemisios@xbmail.dpdns.org">artemisios@xbmail.dpdns.org</a></p>
-                        <p>如果您想分享Artemis引擎游戏直装资源，欢迎通过此邮箱联系我</p>
+                        <p>如果您有希望分享的Artemis引擎游戏资源，欢迎通过此邮箱联系我</p>
                     </div>
                 </div>
+                
+                <!-- 查看投稿格式按钮 -->
+                <button class="format-btn" id="showFormatBtn">
+                    <i class="fas fa-code"></i> 查看投稿JSON格式
+                </button>
             </div>
         </section>
 
@@ -545,7 +754,7 @@
                 <div class="author-info">
                     <h2>关于我</h2>
                     <p>欢迎来到我的Artemis引擎游戏分享站。</p>
-                    <p>这里提供iOS直装游戏资源。</p>
+                    <p>这里提供精选的iOS直装游戏资源。</p>
                     <p>如果您有希望分享的游戏资源，欢迎通过投稿邮箱联系我。</p>
                     
                     <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray);">
@@ -575,6 +784,100 @@
             <p>投稿邮箱: artemisios@xbmail.dpdns.org | B站UID: 2044562667</p>
         </div>
     </footer>
+
+    <!-- 投稿格式模态框 -->
+    <div class="modal-overlay" id="formatModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>投稿JSON格式</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="game-format">游戏投稿格式</button>
+                <button class="modal-tab" data-tab="link-format">友链投稿格式</button>
+            </div>
+            
+            <div class="modal-content">
+                <!-- 游戏投稿格式 -->
+                <div class="tab-content active" id="game-format">
+                    <h3>游戏投稿JSON格式</h3>
+                    <p>请按照以下格式提交游戏投稿，发送到投稿邮箱：<strong>artemisios@xbmail.dpdns.org</strong></p>
+                    
+                    <div class="json-field">
+                        <h4>数据结构</h4>
+                        <p>游戏数据应为一个JSON数组，每个游戏是一个对象</p>
+                    </div>
+                    
+                    <div class="json-example" id="gameJsonExample">
+[
+  {
+    "id": 1,
+    "name": "游戏名称",
+    "image": "https://example.com/game-image.jpg",
+    "port_author": "移植作者",
+    "install_author": "直装作者",
+    "link": "https://example.com/download/1"
+  },
+  {
+    "id": 2,
+    "name": "另一个游戏",
+    "image": "https://example.com/another-game.jpg",
+    "port_author": "另一位移植作者",
+    "install_author": "直装作者",
+    "link": "https://example.com/download/2"
+  }
+]</div>
+                    
+                    <div class="json-field">
+                        <h4>字段说明</h4>
+                        <p><strong>id</strong>: 游戏唯一标识，数字类型</p>
+                        <p><strong>name</strong>: 游戏名称，字符串类型</p>
+                        <p><strong>image</strong>: 游戏封面图URL，字符串类型</p>
+                        <p><strong>port_author</strong>: 移植作者，字符串类型</p>
+                        <p><strong>install_author</strong>: 直装作者，字符串类型</p>
+                        <p><strong>link</strong>: 游戏下载链接，字符串类型</p>
+                    </div>
+                    
+                    <button class="copy-btn" data-copy="gameJsonExample">复制JSON格式</button>
+                </div>
+                
+                <!-- 友链投稿格式 -->
+                <div class="tab-content" id="link-format">
+                    <h3>友链投稿JSON格式</h3>
+                    <p>请按照以下格式提交友情链接投稿，发送到投稿邮箱：<strong>artemisios@xbmail.dpdns.org</strong></p>
+                    
+                    <div class="json-field">
+                        <h4>数据结构</h4>
+                        <p>友情链接数据应为一个JSON数组，每个链接是一个对象</p>
+                    </div>
+                    
+                    <div class="json-example" id="linkJsonExample">
+[
+  {
+    "name": "网站名称",
+    "owner": "站长名称",
+    "url": "https://example.com"
+  },
+  {
+    "name": "另一个网站",
+    "owner": "另一位站长",
+    "url": "https://anotherexample.com"
+  }
+]</div>
+                    
+                    <div class="json-field">
+                        <h4>字段说明</h4>
+                        <p><strong>name</strong>: 网站名称，字符串类型</p>
+                        <p><strong>owner</strong>: 站长名称，字符串类型</p>
+                        <p><strong>url</strong>: 网站链接，字符串类型</p>
+                    </div>
+                    
+                    <button class="copy-btn" data-copy="linkJsonExample">复制JSON格式</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // JSON数据URL配置
@@ -714,6 +1017,72 @@
                 linksContainer.appendChild(linkCard);
             });
         }
+        
+        // 模态框功能
+        const formatModal = document.getElementById('formatModal');
+        const showFormatBtn = document.getElementById('showFormatBtn');
+        const closeModal = document.getElementById('closeModal');
+        
+        // 显示模态框
+        showFormatBtn.addEventListener('click', () => {
+            formatModal.classList.add('active');
+        });
+        
+        // 关闭模态框
+        closeModal.addEventListener('click', () => {
+            formatModal.classList.remove('active');
+        });
+        
+        // 点击模态框外部关闭
+        formatModal.addEventListener('click', (e) => {
+            if (e.target === formatModal) {
+                formatModal.classList.remove('active');
+            }
+        });
+        
+        // 切换标签页
+        document.querySelectorAll('.modal-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // 更新活动标签
+                document.querySelectorAll('.modal-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                tab.classList.add('active');
+                
+                // 显示对应内容
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // 复制JSON功能
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const exampleId = btn.getAttribute('data-copy');
+                const jsonExample = document.getElementById(exampleId);
+                const text = jsonExample.textContent;
+                
+                // 使用现代剪贴板API
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = btn.textContent;
+                    btn.textContent = '已复制!';
+                    btn.style.background = '#28a745';
+                    
+                    // 2秒后恢复原始文本
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                    alert('复制失败，请手动选择并复制文本');
+                });
+            });
+        });
         
         // 初始化页面
         window.gamesLoaded = false;
