@@ -1,4 +1,5 @@
-    {
+[
+{
       "id": 1,
       "name": "夏日口袋",
       "image": "https://via.placeholder.com/300x200?text=Summer+Pockets",
@@ -25,4 +26,4 @@
       "note": "包含精英版高清素材，已适配全面屏iPhone，需预留至少3GB存储空间",
       "link": "https://example.com/download/3"
     }
-  ],
+],
