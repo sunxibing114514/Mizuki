@@ -461,6 +461,23 @@
             margin-bottom: 5px;
         }
         
+        .game-note {
+            margin: 10px 0;
+            padding: 8px 12px;
+            background-color: var(--light-gray);
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
+            font-size: 0.9rem;
+            color: var(--dark);
+            line-height: 1.4;
+        }
+        
+        .game-note-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        
         .game-link {
             display: inline-block;
             margin-top: 15px;
@@ -817,6 +834,7 @@
     "image": "https://example.com/game-image.jpg",
     "port_author": "移植作者",
     "install_author": "直装作者",
+    "note": "游戏备注或描述信息，可选",
     "link": "https://example.com/download/1"
   },
   {
@@ -825,6 +843,7 @@
     "image": "https://example.com/another-game.jpg",
     "port_author": "移植作者",
     "install_author": "直装作者",
+    "note": "这里可以填写游戏的特殊说明、版本信息、注意事项等",
     "link": "https://example.com/download/2"
   }
 ]</div>
@@ -836,6 +855,7 @@
                         <p><strong>image</strong>: 游戏封面图URL，若有则填写</p>
                         <p><strong>port_author</strong>: 移植作者，字符串类型</p>
                         <p><strong>install_author</strong>: 直装作者，字符串类型</p>
+                        <p><strong>note</strong>: 游戏备注或描述，字符串类型，可选</p>
                         <p><strong>link</strong>: 游戏下载链接，字符串类型</p>
                     </div>
                     
@@ -882,7 +902,7 @@
     <script>
         // JSON数据URL配置
         const GAMES_JSON_URL = 'https://gist.githubusercontent.com/sunxibing114514/6765a886b1718459a470c5743fdb31bc/raw/0a86c3dc018be1a854e0889636db9adc1f5907dc/games.json';
-        const LINKS_JSON_URL = 'https://gist.githubusercontent.com/sunxibing114514/6aca4229f28ca767c6921bd5c9a933b4/raw/29489d518a3e421aaba87a429668759e104e8b90/gistfile1.txt'; // 请替换为您的友情链接JSON URL
+        const LINKS_JSON_URL = 'https://gist.githubusercontent.com/sunxibing114514/6aca4229f28ca767c6921bd5c9a933b4/raw/29489d518a3e421aaba87a429668759e104e8b90/gistfile1.txt';
         
         // 页面导航功能
         document.querySelectorAll('.nav-link').forEach(link => {
@@ -955,12 +975,25 @@
             games.forEach(game => {
                 const gameCard = document.createElement('div');
                 gameCard.className = 'game-card';
+                
+                // 构建备注HTML
+                let noteHtml = '';
+                if (game.note && game.note.trim() !== '') {
+                    noteHtml = `
+                        <div class="game-note">
+                            <div class="game-note-title">备注:</div>
+                            <div>${game.note}</div>
+                        </div>
+                    `;
+                }
+                
                 gameCard.innerHTML = `
                     <img src="${game.image}" alt="${game.name}" class="game-image" onerror="this.src='https://via.placeholder.com/300x200?text=Image+Not+Found'">
                     <div class="game-info">
                         <h3 class="game-title">${game.name}</h3>
                         <p class="game-author">移植作者: ${game.port_author}</p>
                         <p class="game-author">直装作者: ${game.install_author}</p>
+                        ${noteHtml}
                         <a href="${game.link}" class="game-link" target="_blank">下载游戏</a>
                     </div>
                 `;
