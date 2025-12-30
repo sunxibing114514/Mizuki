@@ -1,26 +1,28 @@
-[
-  {
-    "id": 1,
-    "name": "某Artemis演示游戏",
-    "image": "https://via.placeholder.com/300x200?text=Game+Cover",
-    "port_author": "移植大佬A",
-    "install_author": "你的名字",
-    "link": "https://example.com/download/1"
-  },
-  {
-    "id": 2,
-    "name": "另一个视觉小说",
-    "image": "https://via.placeholder.com/300x200?text=Visual+Novel",
-    "port_author": "移植大佬B",
-    "install_author": "你的名字",
-    "link": "https://example.com/download/2"
-  },
-  {
-    "id": 3,
-    "name": "测试游戏作品",
-    "image": "https://via.placeholder.com/300x200?text=Test+Game",
-    "port_author": "移植大佬C",
-    "install_author": "你的名字",
-    "link": "https://example.com/download/3"
-  }
-]
+    {
+      "id": 1,
+      "name": "夏日口袋",
+      "image": "https://via.placeholder.com/300x200?text=Summer+Pockets",
+      "port_author": "移植大佬A",
+      "install_author": "您的名字",
+      "note": "此为示例游戏，包含全DLC内容，适用于iOS 12.0及以上版本",
+      "link": "https://example.com/download/1"
+    },
+    {
+      "id": 2,
+      "name": "ATRI -My Dear Moments-",
+      "image": "https://via.placeholder.com/300x200?text=ATRI",
+      "port_author": "移植大佬B",
+      "install_author": "您的名字",
+      "note": "此版本已修复音频播放问题，支持iOS 13.0及以上系统",
+      "link": "https://example.com/download/2"
+    },
+    {
+      "id": 3,
+      "name": "命运石之门",
+      "image": "https://via.placeholder.com/300x200?text=Steins;Gate",
+      "port_author": "移植大佬C",
+      "install_author": "您的名字",
+      "note": "包含精英版高清素材，已适配全面屏iPhone，需预留至少3GB存储空间",
+      "link": "https://example.com/download/3"
+    }
+  ],
