@@ -41,7 +41,6 @@
             padding: 0 20px;
         }
         
-        /* 导航栏样式 */
         header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -112,7 +111,6 @@
             width: 100%;
         }
         
-        /* 页面内容样式 */
         .page {
             display: none;
             padding: 60px 0;
@@ -148,7 +146,6 @@
             border-radius: 2px;
         }
         
-        /* 首页样式 */
         .hero {
             text-align: center;
             max-width: 800px;
@@ -171,7 +168,6 @@
             color: var(--dark-gray);
         }
         
-        /* 投稿区域样式 */
         .contribution-section {
             background: var(--card-bg);
             padding: 40px;
@@ -228,7 +224,6 @@
             text-decoration: underline;
         }
         
-        /* 查看投稿格式按钮 */
         .format-btn {
             display: block;
             margin: 30px auto 0;
@@ -253,7 +248,6 @@
             margin-right: 8px;
         }
         
-        /* 模态框样式 */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -416,7 +410,6 @@
             background: var(--secondary);
         }
         
-        /* 下载页样式 */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -495,7 +488,6 @@
             transform: scale(1.05);
         }
         
-        /* 作者页样式 */
         .author-container {
             display: flex;
             flex-wrap: wrap;
@@ -541,7 +533,6 @@
             color: var(--dark-gray);
         }
         
-        /* 友情链接页样式 */
         .links-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -593,7 +584,6 @@
             text-decoration: underline;
         }
         
-        /* 页脚样式 */
         footer {
             text-align: center;
             padding: 30px 0;
@@ -603,7 +593,6 @@
             font-size: 0.9rem;
         }
         
-        /* 响应式设计 */
         @media (max-width: 768px) {
             .nav-links {
                 gap: 10px;
@@ -667,7 +656,6 @@
             }
         }
         
-        /* 加载动画 */
         .loader {
             display: flex;
             justify-content: center;
@@ -696,16 +684,55 @@
             border-radius: 10px;
             box-shadow: var(--shadow);
         }
+        
+        .refresh-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 25px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(74, 111, 165, 0.3);
+        }
+        
+        .refresh-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(74, 111, 165, 0.4);
+        }
+        
+        .refresh-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .refresh-btn.loading {
+            background: linear-gradient(90deg, #6c757d, #868e96);
+            cursor: not-allowed;
+        }
+        
+        .refresh-btn.loading i {
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
     <header>
         <div class="container">
             <nav>
                 <div class="logo">
                     <i class="fas fa-gamepad"></i>
-                    <span>Artemis引擎</span>
+                    <span>Artemis引擎游戏分享</span>
                 </div>
                 <div class="nav-links">
                     <a href="#" class="nav-link active" data-page="home">首页</a>
@@ -716,118 +743,110 @@
             </nav>
         </div>
     </header>
-
-    <!-- 页面容器 -->
+    
     <main class="container">
-        <!-- 首页 -->
         <section id="home" class="page active">
-            <h1 class="page-title">Artemis引擎游戏分享</h1>
             <div class="hero">
                 <h1>欢迎来到Artemis引擎游戏分享站</h1>
-                <p>这里提供精选的iOS直装游戏资源，所有游戏均基于Artemis引擎优化</p>
+                <p>这里汇集了众多使用Artemis引擎移植的优秀游戏，所有游戏均为iOS直装版本，无需越狱即可安装体验。</p>
+                <p>本站内容由社区贡献和维护，欢迎大家提交新的游戏和友情链接！</p>
             </div>
             
-            <!-- 新增投稿区域 -->
             <div class="contribution-section">
-                <h2>投稿与联系</h2>
+                <h2>投稿指南</h2>
                 <div class="contribution-info">
                     <div class="contribution-item">
-                        <h3><i class="fab fa-bilibili"></i> B站UID</h3>
-                        <p>2044562667</p>
-                        <p>欢迎在B站关注我，获取最新游戏分享动态</p>
+                        <h3><i class="fas fa-gamepad"></i> 游戏投稿</h3>
+                        <p>想要分享你移植或制作的游戏吗？请按照指定的JSON格式提交游戏信息。</p>
                     </div>
                     <div class="contribution-item">
-                        <h3><i class="fas fa-envelope"></i> 投稿邮箱</h3>
-                        <p>邮箱见投稿</p>
-                        <p>如果您有希望分享的Artemis引擎游戏资源，欢迎通过此邮箱联系我</p>
+                        <h3><i class="fas fa-link"></i> 友情链接</h3>
+                        <p>如果你是相关游戏或资源网站的站长，欢迎交换友情链接。</p>
+                        <p>请确保你的网站内容健康、合法，并与游戏相关。</p>
                     </div>
                 </div>
-                
-                <!-- 查看投稿格式按钮 -->
                 <button class="format-btn" id="showFormatBtn">
                     <i class="fas fa-code"></i> 查看投稿JSON格式
                 </button>
             </div>
         </section>
-
-        <!-- 下载页 -->
+        
         <section id="download" class="page">
-            <h1 class="page-title">游戏资源下载</h1>
+            <h1 class="page-title">游戏下载</h1>
+            <div class="refresh-container">
+                <button id="refresh-games" class="refresh-btn">
+                    <i class="fas fa-sync-alt"></i> 刷新游戏列表
+                </button>
+            </div>
             <div class="games-grid" id="games-container">
-                <!-- 游戏卡片将通过JS动态加载 -->
                 <div class="loader">
                     <div class="spinner"></div>
                 </div>
             </div>
         </section>
-
-        <!-- 作者页 -->
+        
         <section id="author" class="page">
             <h1 class="page-title">关于作者</h1>
             <div class="author-container">
                 <div class="author-avatar">
-                    <img src="https://i0.hdslb.com/bfs/face/57043c894bbe11e63ae4063034aedb418410d231.jpg" alt="作者头像" class="avatar-img" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80'">
+                    <img src="https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E5%A4%B4%E5%83%8F/57043c894bbe11e63ae4063034aedb418410d231.jpg" alt="作者头像" class="avatar-img" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80'">
                 </div>
                 <div class="author-info">
-                    <h2>关于我</h2>
-                    <p>欢迎来到我的Artemis引擎游戏分享站。</p>
-                    <p>这里提供精选的iOS直装游戏资源。</p>
-                    <p>如果您有希望分享的游戏资源，欢迎通过投稿邮箱联系我。</p>
-                    
+                    <h2> (sunxibing114514)</h2>
+                    <p>一个热爱游戏移植的技术爱好者</p>
                     <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray);">
-                        <p><strong>B站UID:</strong> 2044562667</p>
-                        <p><strong>投稿邮箱:</strong> 见投稿界面</p>
+                        <p><strong>GitHub:</strong> <a href="https://github.com/sunxibing114514" target="_blank">https://github.com/sunxibing114514</a></p>
                     </div>
                 </div>
             </div>
         </section>
-
-        <!-- 友情链接页 -->
+        
         <section id="links" class="page">
             <h1 class="page-title">友情链接</h1>
+            <div class="refresh-container">
+                <button id="refresh-links" class="refresh-btn">
+                    <i class="fas fa-sync-alt"></i> 刷新友情链接
+                </button>
+            </div>
             <div class="links-grid" id="links-container">
-                <!-- 友情链接将通过JS动态加载 -->
                 <div class="loader">
                     <div class="spinner"></div>
                 </div>
             </div>
         </section>
     </main>
-
-    <!-- 页脚 -->
+    
     <footer>
         <div class="container">
-            <p>© 2023 Artemis引擎游戏分享 | 本网站仅用于技术交流</p>
-            <p>投稿邮箱: 见投稿界面 | B站UID: 2044562667</p>
+            <p>© 2025 Artemis引擎游戏分享站 | 所有游戏资源由社区贡献 | 仅供学习交流使用</p>
+            <p style="margin-top: 10px;">请支持正版游戏，下载后24小时内删除</p>
         </div>
     </footer>
-
-    <!-- 投稿格式模态框 -->
+    
     <div class="modal-overlay" id="formatModal">
         <div class="modal">
             <div class="modal-header">
                 <h2>投稿JSON格式</h2>
-                <button class="modal-close" id="closeModal">&times;</button>
+                <button class="modal-close" id="closeModal">×</button>
             </div>
-            
             <div class="modal-tabs">
                 <button class="modal-tab active" data-tab="game-format">游戏投稿格式</button>
                 <button class="modal-tab" data-tab="link-format">友链投稿格式</button>
             </div>
-            
             <div class="modal-content">
-                <!-- 游戏投稿格式 -->
                 <div class="tab-content active" id="game-format">
-                    <h3>游戏投稿JSON格式</h3>
-                    <p>请按照以下格式提交游戏投稿，发送到投稿邮箱：<strong>artemisgames@xbmail.dpdns.org</strong></p>
-                    
+                    <h3>游戏投稿JSON格式说明</h3>
                     <div class="json-field">
-                        <h4>数据结构</h4>
-                        <p>游戏数据应为一个JSON数组，每个游戏是一个对象</p>
+                        <h4>字段说明：</h4>
+                        <p><strong>id</strong>: 游戏唯一标识符（数字）</p>
+                        <p><strong>name</strong>: 游戏名称</p>
+                        <p><strong>image</strong>: 游戏封面图片URL</p>
+                        <p><strong>port_author</strong>: 移植作者（如无可留空）</p>
+                        <p><strong>install_author</strong>: 直装作者（如无可留空）</p>
+                        <p><strong>note</strong>: 游戏备注或描述信息（可选）</p>
+                        <p><strong>link</strong>: 游戏下载链接</p>
                     </div>
-                    
-                    <div class="json-example" id="gameJsonExample">
-[
+                    <div class="json-example" id="gameJsonExample">[
   {
     "id": 1,
     "name": "游戏名称",
@@ -847,60 +866,45 @@
     "link": "https://example.com/download/2"
   }
 ]</div>
-                    
                     <div class="json-field">
-                        <h4>字段说明</h4>
-                        <p><strong>id</strong>: 无需填写</p>
-                        <p><strong>name</strong>: 游戏名称，字符串类型</p>
-                        <p><strong>image</strong>: 游戏封面图URL，若有则填写</p>
-                        <p><strong>port_author</strong>: 移植作者，字符串类型</p>
-                        <p><strong>install_author</strong>: 直装作者，字符串类型</p>
-                        <p><strong>note</strong>: 游戏备注或描述，字符串类型，可选</p>
-                        <p><strong>link</strong>: 游戏下载链接，字符串类型</p>
+                        <p>请将你的游戏数据按照上述格式整理成JSON数组，并通过GitHub提交PR。</p>
                     </div>
-                    
                     <button class="copy-btn" data-copy="gameJsonExample">复制JSON格式</button>
                 </div>
                 
-                <!-- 友链投稿格式 -->
                 <div class="tab-content" id="link-format">
-                    <h3>友链投稿JSON格式</h3>
-                    <p>请按照以下格式提交友情链接投稿，发送到投稿邮箱：<strong>artemislinks@xbmail.dpdns.org</strong></p>
-                    
+                    <h3>友情链接JSON格式说明</h3>
                     <div class="json-field">
-                        <h4>数据结构</h4>
-                        <p>友情链接数据应为一个JSON数组，每个链接是一个对象</p>
+                        <h4>字段说明：</h4>
+                        <p><strong>name</strong>: 网站名称</p>
+                        <p><strong>owner</strong>: 站长名称</p>
+                        <p><strong>url</strong>: 网站URL地址</p>
+                        <p><strong>description</strong>: 网站描述（可选）</p>
                     </div>
-                    
-                    <div class="json-example" id="linkJsonExample">
-[
+                    <div class="json-example" id="linkJsonExample">[
   {
     "name": "网站名称",
     "owner": "站长名称",
-    "url": "https://example.com"
+    "url": "https://example.com",
+    "description": "网站描述（可选）"
   },
   {
     "name": "另一个网站",
     "owner": "另一位站长",
-    "url": "https://anotherexample.com"
+    "url": "https://anotherexample.com",
+    "description": "另一个网站的描述"
   }
 ]</div>
-                    
                     <div class="json-field">
-                        <h4>字段说明</h4>
-                        <p><strong>name</strong>: 网站名称，字符串类型</p>
-                        <p><strong>owner</strong>: 站长名称，字符串类型</p>
-                        <p><strong>url</strong>: 网站链接，字符串类型</p>
+                        <p>请将友情链接数据按照上述格式整理成JSON数组，并通过GitHub提交PR。</p>
                     </div>
-                    
                     <button class="copy-btn" data-copy="linkJsonExample">复制JSON格式</button>
                 </div>
             </div>
         </div>
     </div>
-
+    
     <script>
-        // JSON数据URL配置
         const GAMES_JSON_URL = 'https://raw.githubusercontent.com/sunxibing114514/Mizuki/master/public/ArtemisIosIpa/games.json';
         const LINKS_JSON_URL = 'https://gist.githubusercontent.com/sunxibing114514/6aca4229f28ca767c6921bd5c9a933b4/raw/29489d518a3e421aaba87a429668759e104e8b90/gistfile1.txt';
         
@@ -908,27 +912,23 @@
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                
-                // 更新活动链接
                 document.querySelectorAll('.nav-link').forEach(el => {
                     el.classList.remove('active');
                 });
                 this.classList.add('active');
                 
-                // 显示对应页面
                 const pageId = this.getAttribute('data-page');
                 document.querySelectorAll('.page').forEach(page => {
                     page.classList.remove('active');
                 });
                 document.getElementById(pageId).classList.add('active');
                 
-                // 如果是下载页且尚未加载数据，则加载游戏数据
+                // 首次访问时加载相应数据
                 if (pageId === 'download' && !window.gamesLoaded) {
                     loadGames();
                     window.gamesLoaded = true;
                 }
                 
-                // 如果是友情链接页且尚未加载数据，则加载友情链接数据
                 if (pageId === 'links' && !window.linksLoaded) {
                     loadLinks();
                     window.linksLoaded = true;
@@ -936,39 +936,48 @@
             });
         });
         
-        // 从JSON加载游戏数据
+        // 加载游戏数据
         async function loadGames() {
             const gamesContainer = document.getElementById('games-container');
+            const refreshBtn = document.getElementById('refresh-games');
+            
             gamesContainer.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+            if (refreshBtn) {
+                refreshBtn.classList.add('loading');
+                refreshBtn.disabled = true;
+            }
             
             try {
                 const response = await fetch(GAMES_JSON_URL);
-                
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP错误! 状态码: ${response.status}`);
                 }
-                
                 const games = await response.json();
                 renderGames(games);
             } catch (error) {
                 console.error('加载游戏数据失败:', error);
                 gamesContainer.innerHTML = `
                     <div class="error-message">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 20px;"></i>
-                        <h3>无法加载游戏数据</h3>
-                        <p>${error.message || '请检查网络连接后刷新页面重试'}</p>
+                        <h3><i class="fas fa-exclamation-triangle"></i> 加载失败</h3>
+                        <p>无法加载游戏数据，请检查网络连接或稍后重试。</p>
+                        <p>错误信息: ${error.message}</p>
                     </div>
                 `;
+            } finally {
+                if (refreshBtn) {
+                    refreshBtn.classList.remove('loading');
+                    refreshBtn.disabled = false;
+                }
             }
         }
         
-        // 渲染游戏列表
+        // 渲染游戏卡片
         function renderGames(games) {
             const gamesContainer = document.getElementById('games-container');
             gamesContainer.innerHTML = '';
             
             if (!games || games.length === 0) {
-                gamesContainer.innerHTML = '<p class="error-message">暂无游戏资源</p>';
+                gamesContainer.innerHTML = '<div class="error-message"><p>暂无游戏数据</p></div>';
                 return;
             }
             
@@ -976,7 +985,6 @@
                 const gameCard = document.createElement('div');
                 gameCard.className = 'game-card';
                 
-                // 构建备注HTML
                 let noteHtml = '';
                 if (game.note && game.note.trim() !== '') {
                     noteHtml = `
@@ -991,62 +999,79 @@
                     <img src="${game.image}" alt="${game.name}" class="game-image" onerror="this.src='https://via.placeholder.com/300x200?text=Image+Not+Found'">
                     <div class="game-info">
                         <h3 class="game-title">${game.name}</h3>
-                        <p class="game-author">移植作者: ${game.port_author}</p>
-                        <p class="game-author">直装作者: ${game.install_author}</p>
+                        ${game.port_author ? `<p class="game-author">移植作者: ${game.port_author}</p>` : ''}
+                        ${game.install_author ? `<p class="game-author">直装作者: ${game.install_author}</p>` : ''}
                         ${noteHtml}
                         <a href="${game.link}" class="game-link" target="_blank">下载游戏</a>
                     </div>
                 `;
+                
                 gamesContainer.appendChild(gameCard);
             });
         }
         
-        // 从JSON加载友情链接数据
+        // 加载友情链接数据
         async function loadLinks() {
             const linksContainer = document.getElementById('links-container');
+            const refreshBtn = document.getElementById('refresh-links');
+            
             linksContainer.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+            if (refreshBtn) {
+                refreshBtn.classList.add('loading');
+                refreshBtn.disabled = true;
+            }
             
             try {
                 const response = await fetch(LINKS_JSON_URL);
-                
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP错误! 状态码: ${response.status}`);
                 }
-                
                 const links = await response.json();
                 renderLinks(links);
             } catch (error) {
                 console.error('加载友情链接数据失败:', error);
                 linksContainer.innerHTML = `
                     <div class="error-message">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 20px;"></i>
-                        <h3>无法加载友情链接</h3>
-                        <p>${error.message || '请检查网络连接后刷新页面重试'}</p>
-                        <p>请确保LINKS_JSON_URL已正确设置</p>
+                        <h3><i class="fas fa-exclamation-triangle"></i> 加载失败</h3>
+                        <p>无法加载友情链接数据，请检查网络连接或稍后重试。</p>
+                        <p>错误信息: ${error.message}</p>
                     </div>
                 `;
+            } finally {
+                if (refreshBtn) {
+                    refreshBtn.classList.remove('loading');
+                    refreshBtn.disabled = false;
+                }
             }
         }
         
-        // 渲染友情链接列表
+        // 渲染友情链接卡片
         function renderLinks(links) {
             const linksContainer = document.getElementById('links-container');
             linksContainer.innerHTML = '';
             
             if (!links || links.length === 0) {
-                linksContainer.innerHTML = '<p class="error-message">暂无友情链接</p>';
+                linksContainer.innerHTML = '<div class="error-message"><p>暂无友情链接数据</p></div>';
                 return;
             }
             
-            links.forEach(link => {
+            // 图标数组
+            const icons = ['fas fa-globe', 'fas fa-gamepad', 'fas fa-download', 'fas fa-code', 'fas fa-users'];
+            
+            links.forEach((link, index) => {
                 const linkCard = document.createElement('div');
                 linkCard.className = 'link-card';
+                
+                const iconIndex = index % icons.length;
+                
                 linkCard.innerHTML = `
-                    <i class="fas fa-link"></i>
-                    <h3>${link.name || '未命名网站'}</h3>
-                    <p class="site-owner">站长: ${link.owner || '未知'}</p>
+                    <i class="${icons[iconIndex]}"></i>
+                    <h3>${link.name}</h3>
+                    <p class="site-owner">站长: ${link.owner}</p>
+                    ${link.description ? `<p>${link.description}</p>` : ''}
                     <a href="${link.url}" target="_blank">访问网站</a>
                 `;
+                
                 linksContainer.appendChild(linkCard);
             });
         }
@@ -1056,35 +1081,30 @@
         const showFormatBtn = document.getElementById('showFormatBtn');
         const closeModal = document.getElementById('closeModal');
         
-        // 显示模态框
         showFormatBtn.addEventListener('click', () => {
             formatModal.classList.add('active');
         });
         
-        // 关闭模态框
         closeModal.addEventListener('click', () => {
             formatModal.classList.remove('active');
         });
         
-        // 点击模态框外部关闭
         formatModal.addEventListener('click', (e) => {
             if (e.target === formatModal) {
                 formatModal.classList.remove('active');
             }
         });
         
-        // 切换标签页
+        // 模态框标签页切换
         document.querySelectorAll('.modal-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 const tabId = tab.getAttribute('data-tab');
                 
-                // 更新活动标签
                 document.querySelectorAll('.modal-tab').forEach(t => {
                     t.classList.remove('active');
                 });
                 tab.classList.add('active');
                 
-                // 显示对应内容
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.classList.remove('active');
                 });
@@ -1099,13 +1119,11 @@
                 const jsonExample = document.getElementById(exampleId);
                 const text = jsonExample.textContent;
                 
-                // 使用现代剪贴板API
                 navigator.clipboard.writeText(text).then(() => {
                     const originalText = btn.textContent;
                     btn.textContent = '已复制!';
                     btn.style.background = '#28a745';
                     
-                    // 2秒后恢复原始文本
                     setTimeout(() => {
                         btn.textContent = originalText;
                         btn.style.background = '';
@@ -1117,9 +1135,13 @@
             });
         });
         
-        // 初始化页面
+        // 初始化
         window.gamesLoaded = false;
         window.linksLoaded = false;
+        
+        // 刷新按钮事件
+        document.getElementById('refresh-games')?.addEventListener('click', loadGames);
+        document.getElementById('refresh-links')?.addEventListener('click', loadLinks);
     </script>
 </body>
 </html>
