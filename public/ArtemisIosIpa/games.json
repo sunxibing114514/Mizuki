@@ -1,47 +1,11 @@
 [
   {
     "id": 1,
-    "name": "经典扫雷",
-    "image": "https://example.com/games/minesweeper.jpg",
-    "port_author": "腾讯游戏工作室",
-    "install_author": "Artemis移植组",
-    "note": "经典扫雷游戏iOS直装版，适配全面屏",
+    "name": "常轨脱离 凸",
+    "image": "https://example.com/1.jpg",
+    "port_author": "Unkown",
+    "install_author": "Unkown",
+    "note": "Unkown",
     "link": "https://example.com/download/minesweeper"
-  },
-  {
-    "id": 2,
-    "name": "俄罗斯方块",
-    "image": "https://example.com/games/tetris.jpg",
-    "port_author": "方块工作室",
-    "install_author": "Artemis移植组",
-    "note": "经典俄罗斯方块游戏，支持多种模式",
-    "link": "https://example.com/download/tetris"
-  },
-  {
-    "id": 3,
-    "name": "贪吃蛇",
-    "image": "https://example.com/games/snake.jpg",
-    "port_author": "腾讯游戏工作室",
-    "install_author": "Artemis移植组",
-    "note": "经典贪吃蛇游戏，支持多种皮肤",
-    "link": "https://example.com/download/snake"
-  },
-  {
-    "id": 4,
-    "name": "2048",
-    "image": "https://example.com/games/2048.jpg",
-    "port_author": "数字游戏工作室",
-    "install_author": "Artemis移植组",
-    "note": "数字合并游戏，挑战高分",
-    "link": "https://example.com/download/2048"
-  },
-  {
-    "id": 5,
-    "name": "五子棋",
-    "image": "https://example.com/games/gobang.jpg",
-    "port_author": "棋牌工作室",
-    "install_author": "Artemis移植组",
-    "note": "经典五子棋游戏，支持人机对战",
-    "link": "https://example.com/download/gobang"
   }
 ]
