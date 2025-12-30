@@ -410,6 +410,127 @@
             background: var(--secondary);
         }
         
+        /* 游戏搜索区域样式 */
+        .search-section {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        
+        .search-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 14px 20px 14px 50px;
+            border: 2px solid var(--gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: white;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+            font-size: 1.2rem;
+        }
+        
+        .search-clear {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--dark-gray);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .search-clear:hover {
+            color: var(--accent);
+        }
+        
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            background: var(--light-gray);
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .filter-btn:hover {
+            background: var(--gray);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .search-stats {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gray);
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 40px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin: 40px 0;
+        }
+        
+        .no-results i {
+            font-size: 3rem;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+        
+        .no-results h3 {
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+        }
+        
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -626,6 +747,15 @@
             .modal-header h2 {
                 font-size: 1.5rem;
             }
+            
+            .search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                min-width: 100%;
+            }
         }
         
         @media (max-width: 480px) {
@@ -653,6 +783,10 @@
             
             .tab-content {
                 padding: 20px;
+            }
+            
+            .filter-container {
+                justify-content: center;
             }
         }
         
@@ -762,7 +896,6 @@
                     <div class="contribution-item">
                         <h3><i class="fas fa-link"></i> 友情链接</h3>
                         <p>如果你是相关游戏或资源网站的站长，欢迎交换友情链接。</p>
-                        <p>请确保你的网站内容健康、合法，并与游戏相关。</p>
                     </div>
                 </div>
                 <button class="format-btn" id="showFormatBtn">
@@ -773,14 +906,59 @@
         
         <section id="download" class="page">
             <h1 class="page-title">游戏下载</h1>
+            
+            <!-- 搜索区域 -->
+            <div class="search-section">
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" class="search-input" placeholder="搜索游戏名称、作者或备注..." autocomplete="off">
+                        <button class="search-clear" id="searchClear" title="清除搜索">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="filter-container">
+                        <button class="filter-btn active" data-filter="all">全部游戏</button>
+                        <button class="filter-btn" data-filter="has-port">有移植作者</button>
+                        <button class="filter-btn" data-filter="has-install">有直装作者</button>
+                        <button class="filter-btn" data-filter="has-note">有备注</button>
+                    </div>
+                </div>
+                
+                <div class="search-stats">
+                    <div id="searchStats">
+                        加载中...
+                    </div>
+                    <div id="sortOptions">
+                        <select id="sortSelect" style="padding: 5px 10px; border-radius: 5px; border: 1px solid var(--gray);">
+                            <option value="name-asc">按名称 A-Z</option>
+                            <option value="name-desc">按名称 Z-A</option>
+                            <option value="id-asc">按ID升序</option>
+                            <option value="id-desc">按ID降序</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 刷新按钮 -->
             <div class="refresh-container">
                 <button id="refresh-games" class="refresh-btn">
                     <i class="fas fa-sync-alt"></i> 刷新游戏列表
                 </button>
             </div>
-            <div class="games-grid" id="games-container">
-                <div class="loader">
-                    <div class="spinner"></div>
+            
+            <!-- 游戏容器 -->
+            <div id="games-content">
+                <div class="games-grid" id="games-container">
+                    <div class="loader">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+                <div id="no-results" class="no-results" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3>没有找到匹配的游戏</h3>
+                    <p>请尝试不同的搜索关键词或筛选条件</p>
                 </div>
             </div>
         </section>
@@ -792,10 +970,11 @@
                     <img src="https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E5%A4%B4%E5%83%8F/57043c894bbe11e63ae4063034aedb418410d231.jpg" alt="作者头像" class="avatar-img" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80'">
                 </div>
                 <div class="author-info">
-                    <h2> (sunxibing114514)</h2>
-                    <p>一个热爱游戏移植的技术爱好者</p>
+                    <h2>孙熙炳 (sunxibing114514)</h2>
+                    <p>一个游戏爱好者</p>
                     <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray);">
                         <p><strong>GitHub:</strong> <a href="https://github.com/sunxibing114514" target="_blank">https://github.com/sunxibing114514</a></p>
+                        <p><strong>邮箱:</strong> xibing@xbmail.dpdns.oeg[非投稿邮箱]</p>
                     </div>
                 </div>
             </div>
@@ -818,7 +997,7 @@
     
     <footer>
         <div class="container">
-            <p>© 2025 Artemis引擎游戏分享站 | 所有游戏资源由社区贡献 | 仅供学习交流使用</p>
+            <p>© 2025 Artemis引擎游戏直装分享站 | 仅供学习交流使用</p>
             <p style="margin-top: 10px;">请支持正版游戏，下载后24小时内删除</p>
         </div>
     </footer>
@@ -908,6 +1087,13 @@
         const GAMES_JSON_URL = 'https://raw.githubusercontent.com/sunxibing114514/Mizuki/master/public/ArtemisIosIpa/games.json';
         const LINKS_JSON_URL = 'https://gist.githubusercontent.com/sunxibing114514/6aca4229f28ca767c6921bd5c9a933b4/raw/29489d518a3e421aaba87a429668759e104e8b90/gistfile1.txt';
         
+        // 全局变量
+        let allGames = [];
+        let filteredGames = [];
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let currentSort = 'name-asc';
+        
         // 页面导航功能
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
@@ -942,6 +1128,8 @@
             const refreshBtn = document.getElementById('refresh-games');
             
             gamesContainer.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+            document.getElementById('no-results').style.display = 'none';
+            
             if (refreshBtn) {
                 refreshBtn.classList.add('loading');
                 refreshBtn.disabled = true;
@@ -952,8 +1140,10 @@
                 if (!response.ok) {
                     throw new Error(`HTTP错误! 状态码: ${response.status}`);
                 }
-                const games = await response.json();
-                renderGames(games);
+                allGames = await response.json();
+                
+                // 初始渲染和过滤
+                applyFiltersAndRender();
             } catch (error) {
                 console.error('加载游戏数据失败:', error);
                 gamesContainer.innerHTML = `
@@ -963,6 +1153,7 @@
                         <p>错误信息: ${error.message}</p>
                     </div>
                 `;
+                document.getElementById('searchStats').innerHTML = '加载失败';
             } finally {
                 if (refreshBtn) {
                     refreshBtn.classList.remove('loading');
@@ -971,17 +1162,82 @@
             }
         }
         
+        // 应用筛选和搜索
+        function applyFiltersAndRender() {
+            // 应用筛选
+            filteredGames = allGames.filter(game => {
+                // 搜索筛选
+                if (currentSearch) {
+                    const searchLower = currentSearch.toLowerCase();
+                    const inName = game.name && game.name.toLowerCase().includes(searchLower);
+                    const inPortAuthor = game.port_author && game.port_author.toLowerCase().includes(searchLower);
+                    const inInstallAuthor = game.install_author && game.install_author.toLowerCase().includes(searchLower);
+                    const inNote = game.note && game.note.toLowerCase().includes(searchLower);
+                    
+                    if (!(inName || inPortAuthor || inInstallAuthor || inNote)) {
+                        return false;
+                    }
+                }
+                
+                // 分类筛选
+                switch (currentFilter) {
+                    case 'has-port':
+                        return game.port_author && game.port_author.trim() !== '';
+                    case 'has-install':
+                        return game.install_author && game.install_author.trim() !== '';
+                    case 'has-note':
+                        return game.note && game.note.trim() !== '';
+                    case 'all':
+                    default:
+                        return true;
+                }
+            });
+            
+            // 应用排序
+            sortGames();
+            
+            // 渲染结果
+            renderGames();
+            
+            // 更新统计信息
+            updateSearchStats();
+        }
+        
+        // 排序游戏
+        function sortGames() {
+            filteredGames.sort((a, b) => {
+                switch (currentSort) {
+                    case 'name-asc':
+                        return (a.name || '').localeCompare(b.name || '');
+                    case 'name-desc':
+                        return (b.name || '').localeCompare(a.name || '');
+                    case 'id-asc':
+                        return (a.id || 0) - (b.id || 0);
+                    case 'id-desc':
+                        return (b.id || 0) - (a.id || 0);
+                    default:
+                        return 0;
+                }
+            });
+        }
+        
         // 渲染游戏卡片
-        function renderGames(games) {
+        function renderGames() {
             const gamesContainer = document.getElementById('games-container');
+            const noResults = document.getElementById('no-results');
+            
             gamesContainer.innerHTML = '';
             
-            if (!games || games.length === 0) {
-                gamesContainer.innerHTML = '<div class="error-message"><p>暂无游戏数据</p></div>';
+            if (!filteredGames || filteredGames.length === 0) {
+                gamesContainer.style.display = 'none';
+                noResults.style.display = 'block';
                 return;
             }
             
-            games.forEach(game => {
+            gamesContainer.style.display = 'grid';
+            noResults.style.display = 'none';
+            
+            filteredGames.forEach(game => {
                 const gameCard = document.createElement('div');
                 gameCard.className = 'game-card';
                 
@@ -1008,6 +1264,30 @@
                 
                 gamesContainer.appendChild(gameCard);
             });
+        }
+        
+        // 更新搜索统计
+        function updateSearchStats() {
+            const statsElement = document.getElementById('searchStats');
+            const total = allGames.length;
+            const showing = filteredGames.length;
+            
+            let statsText = `共 ${total} 个游戏`;
+            
+            if (currentSearch) {
+                statsText += `，搜索 "${currentSearch}" 找到 ${showing} 个结果`;
+            } else if (currentFilter !== 'all') {
+                const filterNames = {
+                    'has-port': '有移植作者',
+                    'has-install': '有直装作者',
+                    'has-note': '有备注'
+                };
+                statsText += `，筛选 "${filterNames[currentFilter]}" 找到 ${showing} 个结果`;
+            } else {
+                statsText += `，显示全部 ${showing} 个`;
+            }
+            
+            statsElement.innerHTML = statsText;
         }
         
         // 加载友情链接数据
@@ -1135,9 +1415,74 @@
             });
         });
         
+        // 搜索功能初始化
+        function initSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchClear = document.getElementById('searchClear');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const sortSelect = document.getElementById('sortSelect');
+            
+            // 搜索输入事件
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    currentSearch = this.value.trim();
+                    
+                    // 显示/隐藏清除按钮
+                    if (currentSearch) {
+                        searchClear.style.display = 'block';
+                    } else {
+                        searchClear.style.display = 'none';
+                    }
+                    
+                    applyFiltersAndRender();
+                }, 300);
+            });
+            
+            // 清除搜索
+            searchClear.addEventListener('click', function() {
+                searchInput.value = '';
+                currentSearch = '';
+                searchClear.style.display = 'none';
+                applyFiltersAndRender();
+            });
+            
+            // 筛选按钮事件
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    currentFilter = this.getAttribute('data-filter');
+                    applyFiltersAndRender();
+                });
+            });
+            
+            // 排序选择事件
+            sortSelect.addEventListener('change', function() {
+                currentSort = this.value;
+                applyFiltersAndRender();
+            });
+            
+            // 搜索框回车键快速搜索
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    clearTimeout(searchTimeout);
+                    currentSearch = this.value.trim();
+                    applyFiltersAndRender();
+                }
+            });
+        }
+        
         // 初始化
         window.gamesLoaded = false;
         window.linksLoaded = false;
+        
+        // 初始化搜索功能
+        initSearch();
         
         // 刷新按钮事件
         document.getElementById('refresh-games')?.addEventListener('click', loadGames);
