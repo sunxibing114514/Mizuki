@@ -53,6 +53,12 @@ draft: false
 
 ---
 
+## 下载链接
+
+https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E8%AA%B0%E3%82%82%E6%99%82%E3%82%92%E5%88%BB%E3%81%BE%E3%81%AA%E3%81%84/default.zip
+
+
+
 ## 注意事项
 - 请确保补丁文件正确覆盖至游戏根目录
 - 如遇乱码或运行问题，可尝试重新转区运行
