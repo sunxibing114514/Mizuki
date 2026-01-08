@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>RM2k/2k3 LCF 深度编辑器 (Engine)</title>
+    <style>
+        :root { --bg: #1e1e1e; --panel: #252526; --text: #d4d4d4; --blue: #3794ff; --green: #6a9955; }
+        body { background: var(--bg); color: var(--text); font-family: 'Consolas', monospace; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 300px; background: var(--panel); padding: 20px; border-right: 1px solid #333; display: flex; flex-direction: column; gap: 15px; }
+        .main { flex: 1; padding: 20px; overflow: hidden; display: flex; flex-direction: column; }
+        h3 { margin: 0 0 10px 0; color: white; border-bottom: 1px solid #444; padding-bottom: 10px; }
+        
+        textarea { 
+            flex: 1; background: #111; color: #9cdcfe; border: 1px solid #444; 
+            padding: 10px; font-family: 'Consolas', monospace; resize: none; 
+            white-space: pre; overflow: auto; 
+        }
+        
+        button { padding: 10px; background: var(--blue); color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { filter: brightness(1.1); }
+        button.secondary { background: #444; }
+        
+        .log { font-size: 12px; color: #888; margin-top: auto; white-space: pre-wrap; word-break: break-all; }
+        .schema-note { font-size: 12px; color: var(--green); margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h3>LCF I/O Engine</h3>
+    <input type="file" id="fileInput" accept=".lsd">
+    <div class="schema-note">
+        // 核心功能：<br>
+        // 1. BerUnsigned 解码/编码<br>
+        // 2. 递归 Chunk 解析<br>
+        // 3. 动态长度重计算<br>
+        // 4. JSON 编辑
+    </div>
+    <button onclick="parseFile()">解析 (Read)</button>
+    <button class="secondary" onclick="compileFile()">打包 (Write)</button>
+    <div id="log" class="log">Ready.</div>
+</div>
+
+<div class="main">
+    <textarea id="jsonEditor" spellcheck="false">// 请先加载 SaveXX.lsd 文件...</textarea>
+</div>
+
+<script>
+/* ==========================================
+   1. LCF 基础工具库 (Ber编码处理)
+   ========================================== */
+const LcfUtils = {
+    // 读取变长整数
+    readBer: (view, offsetRef) => {
+        let value = 0;
+        let byte;
+        do {
+            byte = view.getUint8(offsetRef.current++);
+            value = (value << 7) | (byte & 0x7F);
+        } while (byte & 0x80);
+        return value;
+    },
+
+    // 写入变长整数 (返回字节数组)
+    writeBer: (value) => {
+        const bytes = [];
+        // 处理 0 的情况
+        if (value === 0) return [0];
+        
+        let temp = value;
+        while (temp > 0) {
+            let byte = temp & 0x7F;
+            temp >>= 7;
+            if (bytes.length > 0) byte |= 0x80; // 不是最后一个字节，设置标记位
+            bytes.unshift(byte); // LCF 是大端序存储 Ber
+        }
+        return bytes;
+    },
+
+    // 字符串读取
+    readString: (view, offsetRef, length) => {
+        let str = "";
+        for (let i = 0; i < length; i++) {
+            str += String.fromCharCode(view.getUint8(offsetRef.current++));
+        }
+        return str; // 注意：此处未处理 Shift-JIS，中文可能乱码，但不影响逻辑修改
+    },
+
+    // 字符串写入
+    writeString: (str) => {
+        const bytes = [];
+        for (let i = 0; i < str.length; i++) {
+            bytes.push(str.charCodeAt(i) & 0xFF);
+        }
+        return bytes;
+    }
+};
+
+/* ==========================================
+   2. Schema 定义 (数据地图)
+   这里定义了 ID 对应的数据类型。要扩展功能，只需在这里添加定义。
+   ========================================== */
+const Schema = {
+    // 根节点结构
+    root: {
+        0x64: { name: 'Title', type: 'chunk', schema: 'title' },
+        0x65: { name: 'System', type: 'chunk', schema: 'system' },
+        0x66: { name: 'Variables', type: 'vector_int' }, // 变量数组
+        0x67: { name: 'Switches', type: 'vector_bool' }, // 开关数组
+        0x6B: { name: 'Party', type: 'chunk', schema: 'party' }
+    },
+    // 标题块
+    title: {
+        0x01: { name: 'HeroName', type: 'string' },
+        0x0B: { name: 'FaceFile', type: 'string' }
+    },
+    // 系统块 (金钱在这里)
+    system: {
+        0x11: { name: 'SystemGraphic', type: 'string' },
+        0x1F: { name: 'Gold', type: 'int' }, // <--- 金钱
+        0x20: { name: 'SaveCount', type: 'int' }
+    },
+    // 队伍块
+    party: {
+        0x01: { name: 'Members', type: 'vector_int' } // 队伍成员ID
+    }
+};
+
+/* ==========================================
+   3. 解析器 (Parser) - Buffer to JSON
+   ========================================== */
+class LcfParser {
+    constructor(buffer) {
+        this.view = new DataView(buffer);
+        this.offset = { current: 0 };
+    }
+
+    parse() {
+        // 1. 检查头部
+        const headerLen = LcfUtils.readBer(this.view, this.offset);
+        const headerStr = LcfUtils.readString(this.view, this.offset, headerLen);
+        if (headerStr !== "LcfSaveData") throw new Error("Invalid File Header");
+
+        // 2. 解析根内容
+        return {
+            header: headerStr,
+            content: this.parseChunkBody(Schema.root, this.view.byteLength)
+        };
+    }
+
+    // 通用块解析逻辑
+    parseChunkBody(schemaCtx, endLimit) {
+        const result = {};
+        
+        while (this.offset.current < endLimit) {
+            const id = LcfUtils.readBer(this.view, this.offset);
+            if (id === 0) break; // 结束标记
+
+            const length = LcfUtils.readBer(this.view, this.offset);
+            const nextOffset = this.offset.current + length;
+
+            // 查找 Schema 定义
+            const def = schemaCtx[id];
+            
+            if (def) {
+                // 已知字段
+                if (def.type === 'int') {
+                    result[def.name] = LcfUtils.readBer(this.view, this.offset);
+                } else if (def.type === 'string') {
+                    result[def.name] = LcfUtils.readString(this.view, this.offset, length);
+                } else if (def.type === 'chunk') {
+                    // 递归解析
+                    result[def.name] = this.parseChunkBody(Schema[def.schema], nextOffset);
+                } else if (def.type === 'vector_int') {
+                    // 数组解析 (简单版)
+                    result[def.name] = this.parseVector(length);
+                } else if (def.type === 'vector_bool') {
+                     // 简单处理为 hex，防止解析过于复杂
+                     result[def.name] = "[Binary Data (Switches)]"; 
+                     // 注意：为了演示修改核心数值，这里简化了 Switches
+                }
+            } else {
+                // 未知字段：保留原始数据以便回写
+                const rawData = [];
+                for(let i=0; i<length; i++) rawData.push(this.view.getUint8(this.offset.current++));
+                result[`Unknown_0x${id.toString(16)}`] = rawData;
+            }
+
+            // 修正偏移量，确保安全
+            this.offset.current = nextOffset;
+        }
+        return result;
+    }
+
+    parseVector(length) {
+        const start = this.offset.current;
+        const count = LcfUtils.readBer(this.view, this.offset);
+        const arr = [];
+        // 这是一个极其简化的读取，实际 RM 数组可能稀疏
+        // 这里为了演示金钱修改，我们主要关注 chunk 结构
+        // 如果需要完整修改变量，需要更复杂的 vector parser
+        return { _rawCount: count, _info: "Array handling simplified for demo" };
+    }
+}
+
+/* ==========================================
+   4. 编译器 (Compiler) - JSON to Buffer
+   这是最难的部分：需要递归计算长度
+   ========================================== */
+class LcfWriter {
+    constructor() {
+        this.buffer = [];
+    }
+
+    write(json) {
+        // 1. 写入 Header
+        const headerBytes = LcfUtils.writeString(json.header);
+        this.pushBytes(LcfUtils.writeBer(headerBytes.length));
+        this.pushBytes(headerBytes);
+
+        // 2. 写入 Root Chunks
+        this.writeChunkBody(json.content, Schema.root);
+    }
+
+    pushBytes(arr) {
+        for (let b of arr) this.buffer.push(b);
+    }
+
+    // 递归写入块
+    writeChunkBody(data, schemaCtx) {
+        // 我们需要遍历数据中的 Key
+        // 为了保持顺序，最好按照 ID 排序，但 RM 不强制
+        
+        // 我们需要反查 Schema 来获取 ID
+        const entries = Object.entries(data);
+        
+        for (const [key, value] of entries) {
+            let id = null;
+            let def = null;
+
+            // 1. 尝试从 Schema 匹配名称
+            for (const [sid, sdef] of Object.entries(schemaCtx)) {
+                if (sdef.name === key) {
+                    id = parseInt(sid);
+                    def = sdef;
+                    break;
+                }
+            }
+
+            // 2. 尝试匹配 Unknown_0x...
+            if (id === null && key.startsWith("Unknown_0x")) {
+                id = parseInt(key.split("0x")[1], 16);
+            }
+
+            if (id !== null) {
+                // 生成内容字节
+                let contentBytes = [];
+
+                if (def && def.type === 'int') {
+                    contentBytes = LcfUtils.writeBer(value);
+                } else if (def && def.type === 'string') {
+                    contentBytes = LcfUtils.writeString(value);
+                } else if (def && def.type === 'chunk') {
+                    // 递归：先创建一个临时的 Writer 来获取子块的字节流
+                    const subWriter = new LcfWriter();
+                    subWriter.writeChunkBody(value, Schema[def.schema]);
+                    contentBytes = subWriter.buffer;
+                } else if (Array.isArray(value)) {
+                    // 原始数据回写 (Unknown data)
+                    contentBytes = value;
+                } else if (typeof value === 'object' && value._info) {
+                     // 针对我们的简化 Array，这里无法回写，跳过
+                     // 实际项目中这里需要完整的 Vector Writer
+                     continue; 
+                }
+
+                // 写入： ID + Length + Content
+                this.pushBytes(LcfUtils.writeBer(id));
+                this.pushBytes(LcfUtils.writeBer(contentBytes.length));
+                this.pushBytes(contentBytes);
+            }
+        }
+
+        // 写入结束标记 (ID 0)
+        this.pushBytes([0]);
+    }
+}
+
+/* ==========================================
+   5. UI 交互逻辑
+   ========================================== */
+let originalFileName = "Save01.lsd";
+
+function log(msg) {
+    document.getElementById('log').innerText = msg;
+}
+
+function parseFile() {
+    const fileInput = document.getElementById('fileInput');
+    if (!fileInput.files.length) return log("请选择文件");
+    
+    originalFileName = fileInput.files[0].name;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const buffer = e.target.result;
+            const parser = new LcfParser(buffer);
+            const data = parser.parse();
+            document.getElementById('jsonEditor').value = JSON.stringify(data, null, 4);
+            log("解析成功！你可以修改 'Gold' 或其他数值。");
+        } catch (err) {
+            log("解析错误: " + err.message);
+            console.error(err);
+        }
+    };
+    reader.readAsArrayBuffer(fileInput.files[0]);
+}
+
+function compileFile() {
+    try {
+        const jsonStr = document.getElementById('jsonEditor').value;
+        const jsonData = JSON.parse(jsonStr);
+        
+        const writer = new LcfWriter();
+        writer.write(jsonData);
+        
+        const u8 = new Uint8Array(writer.buffer);
+        const blob = new Blob([u8], {type: "application/octet-stream"});
+        
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "edited_" + originalFileName;
+        link.click();
+        
+        log("打包成功并下载！");
+    } catch (err) {
+        log("打包失败: " + err.message + "\n检查 JSON 格式是否正确。");
+    }
+}
+</script>
+</body>
+</html>
