@@ -21,3 +21,5 @@ draft: false
   - 通常点击.app文件夹就可打包
 
 4. 签名安装ipa
+
+<iframe width="100%" height="468" src="//player.bilibili.com/video/BV1sb6mBgEgh&autoplay=0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
