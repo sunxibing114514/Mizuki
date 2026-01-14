@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>音频元数据提取器</title>
+</head>
+<body>
+    <h1>上传MP3或OGG文件查看元数据</h1>
+    
+    <input type="file" id="audioFile" accept=".mp3,.ogg,audio/mpeg,audio/ogg">
+    <br><br>
+    
+    <div id="metadata"></div>
+
+    <script>
+        document.getElementById('audioFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const metadataDiv = document.getElementById('metadata');
+            metadataDiv.innerHTML = '<p>正在解析文件...</p>';
+            
+            // 显示基本文件信息
+            let info = `<h2>文件信息</h2>
+                        <p><strong>文件名:</strong> ${file.name}</p>
+                        <p><strong>文件类型:</strong> ${file.type}</p>
+                        <p><strong>文件大小:</strong> ${(file.size / 1024).toFixed(2)} KB</p>
+                        <p><strong>最后修改:</strong> ${new Date(file.lastModified).toLocaleString()}</p>`;
+            
+            // 尝试读取ID3标签（仅适用于MP3）
+            if (file.type === 'audio/mpeg') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const arrayBuffer = e.target.result;
+                    
+                    // 简单解析ID3v1标签（位于文件末尾128字节）
+                    const id3v1Start = arrayBuffer.byteLength - 128;
+                    if (id3v1Start > 0) {
+                        try {
+                            const view = new DataView(arrayBuffer, id3v1Start);
+                            const tag = String.fromCharCode(
+                                view.getUint8(0), view.getUint8(1), view.getUint8(2)
+                            );
+                            
+                            if (tag === 'TAG') {
+                                const title = String.fromCharCode(...new Uint8Array(arrayBuffer, id3v1Start + 3, 30)).replace(/\0/g, '');
+                                const artist = String.fromCharCode(...new Uint8Array(arrayBuffer, id3v1Start + 33, 30)).replace(/\0/g, '');
+                                const album = String.fromCharCode(...new Uint8Array(arrayBuffer, id3v1Start + 63, 30)).replace(/\0/g, '');
+                                const year = String.fromCharCode(...new Uint8Array(arrayBuffer, id3v1Start + 93, 4)).replace(/\0/g, '');
+                                
+                                info += `<h2>ID3v1 标签</h2>
+                                        <p><strong>标题:</strong> ${title || '无'}</p>
+                                        <p><strong>艺术家:</strong> ${artist || '无'}</p>
+                                        <p><strong>专辑:</strong> ${album || '无'}</p>
+                                        <p><strong>年份:</strong> ${year || '无'}</p>`;
+                            }
+                        } catch (e) {
+                            console.log('ID3v1解析错误:', e);
+                        }
+                    }
+                    
+                    // 使用Web Audio API获取音频时长等信息
+                    getAudioMetadata(arrayBuffer, file.type).then(audioMeta => {
+                        info += audioMeta;
+                        metadataDiv.innerHTML = info;
+                    }).catch(err => {
+                        info += `<p style="color: red;">无法解析音频数据: ${err.message}</p>`;
+                        metadataDiv.innerHTML = info;
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                // 对于非MP3文件，只使用Web Audio API
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    getAudioMetadata(e.target.result, file.type).then(audioMeta => {
+                        info += audioMeta;
+                        metadataDiv.innerHTML = info;
+                    }).catch(err => {
+                        info += `<p style="color: red;">无法解析音频数据: ${err.message}</p>`;
+                        metadataDiv.innerHTML = info;
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        });
+        
+        async function getAudioMetadata(arrayBuffer, mimeType) {
+            return new Promise((resolve, reject) => {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                audioContext.decodeAudioData(arrayBuffer, function(buffer) {
+                    const duration = buffer.duration;
+                    const sampleRate = buffer.sampleRate;
+                    const channels = buffer.numberOfChannels;
+                    
+                    let meta = `<h2>音频属性</h2>
+                               <p><strong>时长:</strong> ${formatTime(duration)}</p>
+                               <p><strong>采样率:</strong> ${sampleRate} Hz</p>
+                               <p><strong>声道数:</strong> ${channels}</p>
+                               <p><strong>比特率估算:</strong> ${Math.round((arrayBuffer.byteLength * 8) / duration / 1000)} kbps</p>`;
+                    
+                    resolve(meta);
+                }, function(err) {
+                    reject(new Error('音频解码失败'));
+                });
+            });
+        }
+        
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>
