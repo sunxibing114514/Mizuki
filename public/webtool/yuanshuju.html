@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>音频元数据提取器</title>
+    <title>音频元数据提取工具</title>
 </head>
 <body>
     <h1>上传MP3或OGG文件查看元数据</h1>
@@ -13,6 +13,32 @@
     <div id="metadata"></div>
 
     <script>
+        // Shift-JIS解码器
+        class ShiftJISDecoder {
+            constructor() {
+                // 使用TextDecoder API支持Shift-JIS
+                this.decoder = new TextDecoder('shift-jis');
+            }
+            
+            decode(bytes) {
+                try {
+                    return this.decoder.decode(bytes);
+                } catch (e) {
+                    // 回退方案：替换无法解码的字符
+                    let result = '';
+                    for (let i = 0; i < bytes.length; i++) {
+                        const byte = bytes[i];
+                        if (byte >= 0x20 && byte <= 0x7E) {
+                            result += String.fromCharCode(byte);
+                        } else {
+                            result += '?';
+                        }
+                    }
+                    return result;
+                }
+            }
+        }
+
         document.getElementById('audioFile').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -27,13 +53,13 @@
                         <p><strong>文件大小:</strong> ${(file.size / 1024).toFixed(2)} KB</p>
                         <p><strong>最后修改:</strong> ${new Date(file.lastModified).toLocaleString()}</p>`;
             
-            // 尝试读取ID3标签（仅适用于MP3）
+            // 对于MP3文件，尝试解析ID3标签
             if (file.type === 'audio/mpeg') {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const arrayBuffer = e.target.result;
                     
-                    // 简单解析ID3v1标签（位于文件末尾128字节）
+                    // 解析ID3v1标签（文件末尾128字节）
                     const id3v1Start = arrayBuffer.byteLength - 128;
                     if (id3v1Start > 0) {
                         try {
@@ -43,41 +69,78 @@
                             );
                             
                             if (tag === 'TAG') {
-                                const title = String.fromCharCode(...new Uint8Array(arrayBuffer, id3v1Start + 3, 30)).replace(/\0/g, '');
-                                const artist = String.fromCharCode(...new Uint8Array(arrayBuffer, id3v1Start + 33, 30)).replace(/\0/g, '');
-                                const album = String.fromCharCode(...new Uint8Array(arrayBuffer, id3v1Start + 63, 30)).replace(/\0/g, '');
-                                const year = String.fromCharCode(...new Uint8Array(arrayBuffer, id3v1Start + 93, 4)).replace(/\0/g, '');
+                                const sjisDecoder = new ShiftJISDecoder();
                                 
-                                info += `<h2>ID3v1 标签</h2>
+                                // 使用Shift-JIS解码ID3v1标签字段
+                                const titleBytes = new Uint8Array(arrayBuffer, id3v1Start + 3, 30);
+                                const artistBytes = new Uint8Array(arrayBuffer, id3v1Start + 33, 30);
+                                const albumBytes = new Uint8Array(arrayBuffer, id3v1Start + 63, 30);
+                                const yearBytes = new Uint8Array(arrayBuffer, id3v1Start + 93, 4);
+                                const commentBytes = new Uint8Array(arrayBuffer, id3v1Start + 97, 30);
+                                
+                                const title = sjisDecoder.decode(titleBytes).replace(/\0/g, '').trim();
+                                const artist = sjisDecoder.decode(artistBytes).replace(/\0/g, '').trim();
+                                const album = sjisDecoder.decode(albumBytes).replace(/\0/g, '').trim();
+                                const year = sjisDecoder.decode(yearBytes).replace(/\0/g, '').trim();
+                                const comment = sjisDecoder.decode(commentBytes).replace(/\0/g, '').trim();
+                                
+                                info += `<h2>ID3v1 标签 (Shift-JIS编码)</h2>
                                         <p><strong>标题:</strong> ${title || '无'}</p>
                                         <p><strong>艺术家:</strong> ${artist || '无'}</p>
                                         <p><strong>专辑:</strong> ${album || '无'}</p>
-                                        <p><strong>年份:</strong> ${year || '无'}</p>`;
+                                        <p><strong>年份:</strong> ${year || '无'}</p>
+                                        <p><strong>注释:</strong> ${comment || '无'}</p>`;
+                                
+                                // 检查流派编号
+                                const genreByte = view.getUint8(127);
+                                if (genreByte < 255) {
+                                    const genres = [
+                                        '蓝调', '经典摇滚', '乡村音乐', '舞曲', '迪斯科',
+                                        '放克', '垃圾摇滚', '嘻哈', '爵士', '金属',
+                                        '新世纪', '老歌', '其他', '流行', '节奏布鲁斯',
+                                        '说唱', '雷鬼', '摇滚', '科技舞曲', '工业音乐',
+                                        '另类音乐', '斯卡', '死亡金属', '恶作剧', '原声带',
+                                        '欧洲科技舞曲', '氛围音乐', '神游舞曲', '人声', '爵士放克',
+                                        '融合爵士', '迷幻舞曲', '古典', '器乐', '酸性音乐',
+                                        '浩室', '游戏音乐', '声音片段', '福音', '噪音',
+                                        '另类摇滚', '贝斯', '灵魂乐', '朋克', '太空音乐',
+                                        '冥想音乐', '流行器乐', '摇滚器乐', '民族音乐', '哥特',
+                                        '暗潮', '科技工业', '电子音乐', '流行民谣', '欧洲舞曲',
+                                        '梦幻流行', '南方摇滚', '喜剧', '邪典', '匪帮说唱',
+                                        '热门40首', '基督教说唱', '流行放克', '丛林音乐', '美洲原住民',
+                                        '歌舞表演', '新浪潮', '迷幻', '锐舞', '音乐剧',
+                                        '预告片', '低保真', '部落', '酸性朋克', '酸性爵士',
+                                        '波尔卡', '复古', '音乐剧', '摇滚', '硬摇滚'
+                                    ];
+                                    
+                                    const genre = genreByte < genres.length ? genres[genreByte] : `未知 (${genreByte})`;
+                                    info += `<p><strong>流派:</strong> ${genre}</p>`;
+                                }
                             }
                         } catch (e) {
                             console.log('ID3v1解析错误:', e);
                         }
                     }
                     
-                    // 使用Web Audio API获取音频时长等信息
+                    // 使用Web Audio API获取音频技术详情
                     getAudioMetadata(arrayBuffer, file.type).then(audioMeta => {
                         info += audioMeta;
                         metadataDiv.innerHTML = info;
                     }).catch(err => {
-                        info += `<p style="color: red;">无法解析音频数据: ${err.message}</p>`;
+                        info += `<p style="color: red;">音频数据解析失败: ${err.message}</p>`;
                         metadataDiv.innerHTML = info;
                     });
                 };
                 reader.readAsArrayBuffer(file);
             } else {
-                // 对于非MP3文件，只使用Web Audio API
+                // 对于非MP3文件，仅使用Web Audio API
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     getAudioMetadata(e.target.result, file.type).then(audioMeta => {
                         info += audioMeta;
                         metadataDiv.innerHTML = info;
                     }).catch(err => {
-                        info += `<p style="color: red;">无法解析音频数据: ${err.message}</p>`;
+                        info += `<p style="color: red;">音频数据解析失败: ${err.message}</p>`;
                         metadataDiv.innerHTML = info;
                     });
                 };
@@ -95,10 +158,10 @@
                     const channels = buffer.numberOfChannels;
                     
                     let meta = `<h2>音频属性</h2>
-                               <p><strong>时长:</strong> ${formatTime(duration)}</p>
-                               <p><strong>采样率:</strong> ${sampleRate} Hz</p>
+                               <p><strong>播放时长:</strong> ${formatTime(duration)}</p>
+                               <p><strong>采样率:</strong> ${sampleRate.toLocaleString()} Hz</p>
                                <p><strong>声道数:</strong> ${channels}</p>
-                               <p><strong>比特率估算:</strong> ${Math.round((arrayBuffer.byteLength * 8) / duration / 1000)} kbps</p>`;
+                               <p><strong>估计比特率:</strong> ${Math.round((arrayBuffer.byteLength * 8) / duration / 1000)} kbps</p>`;
                     
                     resolve(meta);
                 }, function(err) {
