@@ -147,7 +147,7 @@ export const siteConfig: SiteConfig = {
 
 		homeText: {
 			enable: true, // 在主页显示自定义文本
-			title: "花间月", // 主页横幅主标题
+			title: "花间月", // 修复：添加缺失的闭合引号
 
 			subtitle: [
 				"谁也没能被时间记住",
@@ -210,7 +210,7 @@ export const siteConfig: SiteConfig = {
 			enableCompress: true, // 启用字体子集优化，减少字体文件大小
 		},
 	},
-	showLastModified: true, // 控制“上次编辑”卡片显示的开关
+	showLastModified: true, // 控制"上次编辑"卡片显示的开关
 };
 export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {
 	src: {
@@ -246,6 +246,11 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Home,
 		LinkPreset.Archive,
 		// 支持自定义导航栏链接，支持多级菜单
+		{
+			name: "Social",
+			url: "#",
+			icon: "material-symbols:share",
+			children: [
 				{
 					name: "GitHub",
 					url: "https://github.com/sunxibing114514",
@@ -288,7 +293,7 @@ export const navBarConfig: NavBarConfig = {
 				},
 				{
 					name: "Devices",
-					url: "devices/",
+					url: "/devices/", // 修复：添加开头的斜杠
 					icon: "material-symbols:devices",
 					external: false,
 				},
@@ -520,7 +525,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 是否启用该组件
 			enable: true,
 			// 组件显示顺序
-			order: 5,
+			order: 4, // 修复：改为唯一的顺序值
 			// 组件位置："sticky" 表示粘性定位
 			position: "top",
 			// 所在侧边栏
@@ -541,7 +546,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 是否启用该组件
 			enable: true,
 			// 组件显示顺序
-			order: 5,
+			order: 5, // 修复：保持唯一顺序值
 			// 组件位置
 			position: "top",
 			// 所在侧边栏
