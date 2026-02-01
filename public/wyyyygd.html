@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCM Playlist Generator</title>
+    <style>
+        /* ====================
+           Layout & Overrides
+           ==================== */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e8e8e8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* 覆盖 CSS 中的伪元素文字，使其符合当前语境 */
+        .card-side::before {
+            content: 'Input' !important; /* 原为 Log in */
+        }
+        .card-side::after {
+            content: 'Result' !important; /* 原为 Sign up */
+        }
+
+        /* 响应式调整 */
+        .wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 结果文本域样式 (复用 input 样式但做调整) */
+        .result-area {
+            width: 250px;
+            height: 180px;
+            border-radius: 5px;
+            border: 2px solid var(--main-color);
+            background-color: var(--bg-color);
+            box-shadow: 4px 4px var(--main-color);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--font-color);
+            padding: 10px;
+            outline: none;
+            resize: none;
+            overflow-y: auto;
+        }
+
+        /* 加载状态 */
+        .loading {
+            cursor: wait;
+            opacity: 0.7;
+        }
+
+        /* ====================
+           User Provided CSS
+           ==================== */
+        /* From Uiverse.io by andrew-demchenk0 */ 
+        .wrapper {
+          --input-focus: #2d8cf0;
+          --font-color: #323232;
+          --font-color-sub: #666;
+          --bg-color: #fff;
+          --bg-color-alt: #666;
+          --main-color: #323232;
+        }
+        /* switch card */
+        .switch {
+          transform: translateY(-200px);
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          gap: 30px;
+          width: 50px;
+          height: 20px;
+        }
+
+        .card-side::before {
+          position: absolute;
+          content: 'Log in';
+          left: -70px;
+          top: 0;
+          width: 100px;
+          text-decoration: underline;
+          color: var(--font-color);
+          font-weight: 600;
+        }
+
+        .card-side::after {
+          position: absolute;
+          content: 'Sign up';
+          left: 70px;
+          top: 0;
+          width: 100px;
+          text-decoration: none;
+          color: var(--font-color);
+          font-weight: 600;
+        }
+
+        .toggle {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        .slider {
+          box-sizing: border-box;
+          border-radius: 5px;
+          border: 2px solid var(--main-color);
+          box-shadow: 4px 4px var(--main-color);
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: var(--bg-colorcolor);
+          transition: 0.3s;
+        }
+
+        .slider:before {
+          box-sizing: border-box;
+          position: absolute;
+          content: "";
+          height: 20px;
+          width: 20px;
+          border: 2px solid var(--main-color);
+          border-radius: 5px;
+          left: -2px;
+          bottom: 2px;
+          background-color: var(--bg-color);
+          box-shadow: 0 3px 0 var(--main-color);
+          transition: 0.3s;
+        }
+
+        .toggle:checked + .slider {
+          background-color: var(--input-focus);
+        }
+
+        .toggle:checked + .slider:before {
+          transform: translateX(30px);
+        }
+
+        .toggle:checked ~ .card-side:before {
+          text-decoration: none;
+        }
+
+        .toggle:checked ~ .card-side:after {
+          text-decoration: underline;
+        }
+
+        /* card */ 
+
+        .flip-card__inner {
+          width: 300px;
+          height: 350px;
+          position: relative;
+          background-color: transparent;
+          perspective: 1000px;
+          text-align: center;
+          transition: transform 0.8s;
+          transform-style: preserve-3d;
+        }
+
+        .toggle:checked ~ .flip-card__inner {
+          transform: rotateY(180deg);
+        }
+
+        .toggle:checked ~ .flip-card__front {
+          box-shadow: none;
+        }
+
+        .flip-card__front, .flip-card__back {
+          padding: 20px;
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+          background: lightgrey;
+          gap: 20px;
+          border-radius: 5px;
+          border: 2px solid var(--main-color);
+          box-shadow: 4px 4px var(--main-color);
+        }
+
+        .flip-card__back {
+          width: 100%;
+          transform: rotateY(180deg);
+        }
+
+        .flip-card__form {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+
+        .title {
+          margin: 20px 0 20px 0;
+          font-size: 25px;
+          font-weight: 900;
+          text-align: center;
+          color: var(--main-color);
+        }
+
+        .flip-card__input {
+          width: 250px;
+          height: 40px;
+          border-radius: 5px;
+          border: 2px solid var(--main-color);
+          background-color: var(--bg-color);
+          box-shadow: 4px 4px var(--main-color);
+          font-size: 15px;
+          font-weight: 600;
+          color: var(--font-color);
+          padding: 5px 10px;
+          outline: none;
+        }
+
+        .flip-card__input::placeholder {
+          color: var(--font-color-sub);
+          opacity: 0.8;
+        }
+
+        .flip-card__input:focus {
+          border: 2px solid var(--input-focus);
+        }
+
+        .flip-card__btn:active, .button-confirm:active {
+          box-shadow: 0px 0px var(--main-color);
+          transform: translate(3px, 3px);
+        }
+
+        .flip-card__btn {
+          margin: 20px 0 20px 0;
+          width: 120px;
+          height: 40px;
+          border-radius: 5px;
+          border: 2px solid var(--main-color);
+          background-color: var(--bg-color);
+          box-shadow: 4px 4px var(--main-color);
+          font-size: 17px;
+          font-weight: 600;
+          color: var(--font-color);
+          cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="card-switch">
+            <label class="switch">
+               <input type="checkbox" class="toggle" id="viewToggle">
+               <span class="slider"></span>
+               <span class="card-side"></span>
+            </label>
+        </div>
+
+        <div class="flip-card__inner">
+            <div class="flip-card__front">
+                <div class="title">Config</div>
+                <form class="flip-card__form" onsubmit="event.preventDefault(); generateList();">
+                    <input class="flip-card__input" name="url" placeholder="Playlist Link (URL)" type="text" id="inputUrl" required>
+                    <input class="flip-card__input" name="limit" placeholder="Count (0 or empty for All)" type="number" id="inputLimit" value="100">
+                    <button class="flip-card__btn" type="submit" id="genBtn">Generate</button>
+                </form>
+            </div>
+
+            <div class="flip-card__back">
+                <div class="title">Output</div>
+                <form class="flip-card__form" onsubmit="event.preventDefault(); copyText();">
+                    <textarea class="result-area" placeholder="Result will appear here..." id="outputArea" readonly></textarea>
+                    <button class="flip-card__btn" type="submit">Copy</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base (Using a public CORS proxy to access standard NCM structure, 
+        // or a stable public NeteaseCloudMusicApi instance)
+        // 为了稳定性，这里使用 AllOrigins 代理访问网易云接口，
+        // 或者直接调用 reliable public vercel instances. 
+        // 这里采用直接调用 Vercel 部署的 NeteaseCloudMusicApi 镜像，这是目前前端最通用的做法。
+        // 注意：公共接口可能会有速率限制。
+        const API_BASE = 'https://netease-cloud-music-api-anon.vercel.app'; 
+
+        async function generateList() {
+            const urlInput = document.getElementById('inputUrl').value;
+            const limitInput = document.getElementById('inputLimit').value;
+            const btn = document.getElementById('genBtn');
+            const toggle = document.getElementById('viewToggle');
+            const output = document.getElementById('outputArea');
+
+            // Extract ID
+            const idMatch = urlInput.match(/id=(\d+)/);
+            if (!idMatch) {
+                alert("Invalid URL! Please copy the full link from NetEase Cloud Music.");
+                return;
+            }
+            const playlistId = idMatch[1];
+            
+            // Set Loading
+            btn.textContent = "Loading...";
+            btn.classList.add('loading');
+            
+            try {
+                // Fetch Playlist Data
+                // endpoint: /playlist/track/all?id=xxx&limit=xxx&offset=0
+                // Default limit is 100 if user doesn't specify logic properly, but API handles limit.
+                let fetchUrl = `${API_BASE}/playlist/track/all?id=${playlistId}`;
+                
+                // 处理数量逻辑
+                let displayCount = "所有";
+                let limit = parseInt(limitInput);
+                
+                if (limit > 0) {
+                    fetchUrl += `&limit=${limit}`;
+                    displayCount = limit;
+                } else {
+                    // 如果是0或空，API默认全取（或者需要显式设置一个大数）
+                    // 现在的API wrapper通常支持不用limit返回所有，或者我们需要手动处理
+                    // 这里不做分页处理，假设一次获取（API通常支持limit=1000等）
+                }
+
+                const response = await fetch(fetchUrl);
+                const data = await response.json();
+
+                if (data.code !== 200) {
+                    throw new Error("API Error: " + (data.message || "Unknown error"));
+                }
+
+                const songs = data.songs;
+                if (!songs || songs.length === 0) {
+                    throw new Error("No songs found or private playlist.");
+                }
+
+                // Slice array manually just in case API ignored limit (common in some versions)
+                const finalSongs = (limit > 0) ? songs.slice(0, limit) : songs;
+                if (limit <= 0) displayCount = finalSongs.length;
+
+                // Format Text
+                let resultText = `以下是我在网易云音乐最近${displayCount}首红心（喜欢并收藏）的歌曲\n请根据歌曲的名称与演唱艺人信息，专业、深刻且幽默风趣地锐评下我的听歌品味，并解析下我的内心世界\n`;
+
+                finalSongs.forEach(song => {
+                    const artistNames = song.ar.map(a => a.name).join('/');
+                    resultText += `歌名:${song.name};歌手:${artistNames}\n`;
+                });
+
+                // Update UI
+                output.value = resultText;
+                toggle.checked = true; // Flip card
+
+            } catch (err) {
+                alert("Failed to fetch: " + err.message + "\n(Try checking if the playlist is public)");
+            } finally {
+                btn.textContent = "Generate";
+                btn.classList.remove('loading');
+            }
+        }
+
+        function copyText() {
+            const output = document.getElementById('outputArea');
+            output.select();
+            output.setSelectionRange(0, 99999); // For mobile
+            
+            try {
+                navigator.clipboard.writeText(output.value).then(() => {
+                    alert('Copied to clipboard!');
+                });
+            } catch (err) {
+                alert('Failed to copy manually.');
+            }
+        }
+    </script>
+</body>
+</html>
