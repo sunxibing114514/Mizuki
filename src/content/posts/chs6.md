@@ -1,6 +1,6 @@
 ---
 title: 雪舞う彼方に日は堕ちて汉化补丁
-published: 2026-2-2
+published: 2026-02-02
 description: 雪舞う彼方に日は堕ちて
 tags: [汉化]
 category: 汉化
@@ -50,18 +50,12 @@ draft: false
 - **GitHub**: [patch.xp3](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/yukimai/patch.xp3)
 
 ### 游戏本体
-- **GitHub**: [redwitch.zip](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E8%B5%A4%E3%81%84%E9%AD%94%E5%A5%B3%E6%B1%89%E5%8C%96/redwitch.zip)
-- **123云盘**: [下载地址](https://www.123684.com/s/FrLAjv-UpsX)
-- **百度云盘**: 
-  - 链接: https://pan.baidu.com/s/1SQ3YdhzlgUAbfEBIXnCUAA
-  - 提取码: 4u81
-- **Telegram**: [下载地址](https://t.me/chaobingblog/10)
+- **官网**: [地址](https://mill-soft.jp/works/)
+- **Telegram**: [下载地址](https://t.me/chaobingblog/12)
 
 ## 📝 后记
-这是我的第三个汉化作品。虽然文本体量非常小，一天不到就完成了，但这也是我的第一个 Kirikiri 引擎的汉化。
+这是我的第四个汉化作品，过程蛮顺利的，没想到卡在了封包上 捂脸
 
 **祝你游玩愉快！**
 
 ---
-
-*本文档排版由AI优化*
