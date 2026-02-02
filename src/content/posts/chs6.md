@@ -64,7 +64,6 @@ draft: false
 
 ### 游戏本体
 - **官网**: [地址](https://mill-soft.jp/works/)
-- **Telegram**: [下载地址](https://t.me/chaobingblog/12)
 
 ## 📝 后记
 这是我的第四个汉化作品，过程蛮顺利的，没想到卡在了封包上 捂脸
