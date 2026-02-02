@@ -60,8 +60,8 @@ draft: false
 ## ⬇️ 下载链接
 
 ### 游戏补丁
-- **GitHub**: [patch.xp3](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/yukimai/patch.xp3)
-- **openlist**: [patch.zip](https://pan.xibing.us.ci/%E5%AF%B9%E8%B1%A1/yukimaipatch.zip)
+- **GitHub**: [patch.xp3]()
+- **openlist**: [patch.zip]()
 
 ### 游戏本体
 - **官网**: [地址](https://mill-soft.jp/works/)
