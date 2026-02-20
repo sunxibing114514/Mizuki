@@ -34,7 +34,6 @@ draft: false
 | **苹果测试** | 你 |
 | **电脑测试** | 花间月、你 |
 | **VNDB** | [vndb.org/v36788](https://vndb.org/v36788) |
-| **汉化主页** | xibing.us.ci |
 
 ## 📊 字数统计
 - **原版日文字数**：无统计
@@ -62,8 +61,7 @@ draft: false
 - **GitHub**: [patch.xp3](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/yukimai/patch.xp3)
 - **openlist**: [patch.zip](https://pan.xibing.us.ci/%E5%AF%B9%E8%B1%A1/yukimaipatch.zip)
 
-### 游戏本体
-- **官网**: [地址](https://mill-soft.jp/works/)
+
 
 ## 📝 后记
 第四个汉化作品
