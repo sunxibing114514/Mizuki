@@ -10,3 +10,4 @@ draft: false
 
 [patch2.xp3 beta直链](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E5%A4%A2%E3%81%AE%E4%B8%AD%E3%81%AE%E7%A7%81b0.0.1/patch2.xp3)
 
+[作品下载](https://mill-soft.jp/works/)
