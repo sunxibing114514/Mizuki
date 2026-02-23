@@ -13,3 +13,5 @@ draft: false
 [作品下载](https://mill-soft.jp/works/)
 
 在官网下载作品和修正补丁后解压,双击安装exe安装,无需转区,安装后安装修正补丁,完成后将patch2.xp3移动到目录下即可
+
+声明 http://hjymoon.us.ci/about/
