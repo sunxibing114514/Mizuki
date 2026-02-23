@@ -1,49 +1,16 @@
+=== 汉化补丁免责声明 ===
 
-This website is built with the **Astro** framework using the [Mizuki](https://github.com/matsuzaka-yuki/mizuki) theme.
+1. 版权归属：本汉化补丁所应用的游戏本体及相关素材，其版权归游戏原始开发商所有。本汉化补丁仅用于学习交流目的。
 
-::github{repo="matsuzaka-yuki/Mizuki"}
+2. 非官方性质：本汉化补丁为“民间汉化”，与游戏官方无任何关联，未经官方授权，也不会用于任何商业盈利目的。
 
-## 🌟 Theme Features
+3. 使用目的：本补丁仅供玩家交流学习、改善游戏体验之用。我们鼓励玩家在条件允许的情况下，购买正版游戏以支持开发者。
 
-### 🎨 Design & User Experience
-- **Modern & Elegant Design** - Clean, minimalist interface with beautiful typography
-- **Fully Responsive** - Optimized for all devices from mobile to desktop
-- **Dark/Light Mode** - Automatic theme switching with smooth transitions
-- **Beautiful Typography** - Enhanced readability with JetBrains Mono font
-- **Smooth Animations** - Fluid page transitions and interactive elements
+4. 风险承担：使用本汉化补丁可能存在的风险（包括但不限于游戏兼容性问题、存档损坏等）由使用者自行承担。汉化组成员不对此承担任何责任。
 
-### 🔍 Content & Search
-- **Advanced Search** - Powered by [Pagefind](https://pagefind.app/) for fast, accurate results
-- **Enhanced Markdown** - Extended syntax with code highlighting and math support
-- **Interactive Table of Contents** - Auto-scroll navigation for long articles
-- **RSS Feed Generation** - Stay updated with automatic feed generation
-- **Reading Time Estimation** - Know how long articles take to read
-- **Post Categorization** - Organize content with tags and categories
+5. 禁止行为：
+   · 严禁将本汉化补丁用于任何商业用途（如贩卖、捆绑销售等）。
+   · 未经许可，禁止将本汉化补丁的文本、资源用于其他整合包或二次修改发布。
+   · 转载本补丁请保留原发布页面的链接与免责声明链接
 
-
-
-### 📱 Special Pages
-- **Anime Tracking Page** - Track your anime watching progress with ratings
-- **Friends Links Page** - Showcase friend websites with beautiful cards
-- **Diary/Moments Page** - Share life moments like social media posts
-- **Archive Page** - Organized timeline view of all posts
-- **About Page** - Customizable personal introduction (this page!)
-
-### 🛠 Technical Features
-- **Enhanced Code Blocks** - Powered by [Expressive Code](https://expressive-code.com/)
-- **Math Support** - LaTeX rendering with KaTeX for mathematical expressions
-- **Image Optimization** - PhotoSwipe gallery with lazy loading
-- **SEO Optimized** - Built-in sitemap and meta tags for better search visibility
-- **Performance Optimized** - Fast loading with caching and optimization
-- **Comment System Ready** - Integration support for Twikoo comments
-
-### 🎯 Advanced Markdown Features
-- **Callouts & Admonitions** - Beautiful info boxes with `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`
-- **Mathematical Equations** - Write LaTeX math with `$inline$` and `$$block$$` syntax
-- **GitHub Cards** - Embed repository cards with `::github{repo="user/repo"}`
-- **Syntax Highlighting** - Advanced code highlighting with line numbers
-- **Copy Code Buttons** - Easy code copying functionality
-
----
-
-*Built with ❤️ using Astro and inspired by modern web design principles.*
+6. 接受条款：下载并安装本汉化补丁即表示您已阅读、理解并同意本免责声明的全部条款。
