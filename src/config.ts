@@ -265,7 +265,7 @@ export const navBarConfig: NavBarConfig = {
 				},
 				{
 					name: "Telegram",
-					url: "https://t.me/chaobingblog",
+					url: "https://t.me/+yC7QfqaLq8ZhYmVl",
 					external: true,
 					icon: "fa6-brands:telegram",
 				},
