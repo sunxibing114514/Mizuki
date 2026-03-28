@@ -18,6 +18,7 @@ draft: false
 
 - 直接下载：[default.zip](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E6%97%A0%E6%98%9F%E5%A4%9C%E7%A9%BA%E4%B8%8B/default.zip)
 - 交流反馈：[Telegram 群组](https://t.me/+yC7QfqaLq8ZhYmVl)
+- 原作链接：[互联网档案馆](https://web.archive.org/web/20051028071543/http://mukiryokukan.sakura.ne.jp/index.htm)
 
 ## 原作信息
 - **原作**：Mukiryokukan
