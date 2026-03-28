@@ -14,6 +14,11 @@ draft: false
 
 > 本文档由 AI 生成。
 
+## 下载
+
+- 直接下载：[default.zip](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E6%97%A0%E6%98%9F%E5%A4%9C%E7%A9%BA%E4%B8%8B/default.zip)
+- 交流反馈：[Telegram 群组](https://t.me/+yC7QfqaLq8ZhYmVl)
+
 ## 原作信息
 - **原作**：Mukiryokukan
 - **汉化制作**：花间月个人汉化 & DeepSeek-V3.2（加校对）
