@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF生成器</title>
+    <!-- 引入jsPDF库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #1a1a1a; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { background: #fff; max-width: 800px; width: 100%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 30px; }
+        h1 { color: #1a1a1a; font-size: 24px; margin-bottom: 20px; text-align: center; }
+        textarea { width: 100%; height: 200px; padding: 15px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 16px; resize: vertical; margin-bottom: 20px; }
+        .btn { background: #3b82f6; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background 0.2s; display: block; margin: 0 auto; }
+        .btn:hover { background: #2563eb; }
+        @media (max-width: 600px) { .container { padding: 20px; } h1 { font-size: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 在线PDF生成器</h1>
+        <textarea id="textInput" placeholder="请输入要生成PDF的文本..."></textarea>
+        <button class="btn" onclick="generatePDF()">生成并下载PDF</button>
+    </div>
+
+    <script>
+        // 自动适配字号（核心逻辑）
+        function autoFitFontSize(text) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const pageWidth = 210; // A4宽（mm）
+            const pageHeight = 297; // A4高（mm）
+            let fontSize = 20; // 初始字号（pt）
+            const lineHeight = 1.2; // 行高倍数
+
+            while (fontSize > 8) { // 最小字号8pt
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(fontSize);
+                const lines = doc.splitTextToSize(text, pageWidth - 20); // 左右留10mm边距
+                const totalHeight = lines.length * fontSize * lineHeight;
+                
+                if (totalHeight <= pageHeight - 20) break; // 上下留10mm边距
+                fontSize--;
+            }
+            return { fontSize, lines };
+        }
+
+        // 生成并下载PDF
+        function generatePDF() {
+            const text = document.getElementById('textInput').value.trim();
+            if (!text) return alert("请输入文本内容！");
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const { fontSize, lines } = autoFitFontSize(text);
+            
+            // 写入PDF（居中显示）
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(fontSize);
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const textWidth = pageWidth - 20; // 左右边距10mm
+            const x = (pageWidth - textWidth) / 2;
+            let y = (doc.internal.pageSize.getHeight() - lines.length * fontSize * 1.2) / 2;
+
+            lines.forEach(line => {
+                doc.text(line, x, y);
+                y += fontSize * 1.2;
+            });
+
+            // 下载PDF
+            doc.save(`生成的PDF_${new Date().getTime()}.pdf`);
+        }
+    </script>
+</body>
+</html>
