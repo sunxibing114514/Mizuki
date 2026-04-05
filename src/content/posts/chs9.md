@@ -33,6 +33,9 @@ draft: false
 - **Telegram 群组**（交流反馈）：  
   [https://t.me/+yC7QfqaLq8ZhYmVl](https://t.me/+yC7QfqaLq8ZhYmVl)
 
+- **vndb**：  
+  [https://vndb.org/r152646](https://vndb.org/r152646)
+
 ## 📄 版权声明
 
 本补丁仅供学习交流使用，请在下载后 24 小时内删除。游戏版权归原著作权方所有。
