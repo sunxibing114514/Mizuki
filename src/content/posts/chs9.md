@@ -28,7 +28,7 @@ draft: false
 ## 🔗 下载与交流
 
 - **补丁下载链接**（GitHub release）：  
-  [patch.zip](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E6%A1%9C%E6%97%A5%E5%92%8C/patch.zip)
+  [patch.zip](httpsp)
 
 - **Telegram 群组**（交流反馈）：  
   [https://t.me/+yC7QfqaLq8ZhYmVl](https://t.me/+yC7QfqaLq8ZhYmVl)
