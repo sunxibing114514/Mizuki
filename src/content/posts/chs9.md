@@ -25,10 +25,12 @@ draft: false
 2. 将 `补丁文件夹` 下的 **所有文件** 放在游戏根目录。
 3. 运行 `桜日和Chs.exe` 启动汉化版游戏。
 
-## 🔗 下载与交流
+## 下载与交流
 
 - **补丁下载链接**（GitHub release）：  
-  [patch.zip](httpsp)
+  [patch.zip](https://github.com/sunxibing114514/Personal-website-file-storage/releases/download/%E6%A1%9C%E6%97%A5%E5%92%8C/patch.zip)
+
+> ⚠️ 该版本似乎无法播放 BGM，原因未知。我修改原 exe 编码为 GBK 后无法打开窗口。
 
 - **Telegram 群组**（交流反馈）：  
   [https://t.me/+yC7QfqaLq8ZhYmVl](https://t.me/+yC7QfqaLq8ZhYmVl)
